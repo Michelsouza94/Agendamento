@@ -1,46 +1,8 @@
-const slots = document.querySelectorAll(".slot");
-const reserveDialog = document.getElementById("reserveDialog");
-const receiptDialog = document.getElementById("receiptDialog");
-const reserveForm = document.getElementById("reserveForm");
-const selectedClass = document.getElementById("selectedClass");
-const reservationNotice = document.getElementById("reservationNotice");
-
-slots.forEach((slot) => {
-  const header = slot.querySelector(".slot-header");
-  header.addEventListener("click", () => {
-    const isOpen = slot.classList.toggle("open");
-    header.setAttribute("aria-expanded", String(isOpen));
-  });
-});
-
-document.querySelectorAll(".reserve").forEach((button) => {
-  button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const card = button.closest(".class-card");
-    const slot = button.closest(".slot");
-    const time = slot.querySelector(".time").textContent.trim();
-    const className = card.querySelector("strong").textContent.trim();
-
-    selectedClass.textContent = `${className} · ${time}`;
-    reservationNotice.hidden = true;
-    reserveDialog.showModal();
-  });
-});
-
-reserveForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  reservationNotice.textContent =
-    "Reserva registrada nesta demonstração. Na próxima etapa vamos conectar ao banco de dados.";
-  reservationNotice.hidden = false;
-
-  reserveForm.reset();
-});
-
-document.getElementById("receiptButton").addEventListener("click", () => {
-  receiptDialog.showModal();
-});
-
-document.getElementById("closeReceipt").addEventListener("click", () => {
-  receiptDialog.close();
-});
+const backdrop=document.getElementById('modalBackdrop'),receiptModal=document.getElementById('receiptModal'),subtitle=document.getElementById('modalSubtitle'),form=document.getElementById('reservationForm'),msg=document.getElementById('formMessage');
+document.querySelectorAll('.details-btn').forEach(b=>b.onclick=()=>{subtitle.textContent=`Horário selecionado: ${b.dataset.slot}`;form.classList.add('hidden');msg.textContent='';backdrop.classList.add('open')});
+document.querySelectorAll('.class-option').forEach(b=>b.onclick=()=>{form.classList.remove('hidden');msg.textContent=`Você selecionou ${b.dataset.class}.`;document.getElementById('nameInput').focus()});
+document.getElementById('reserveBtn').onclick=()=>{const n=document.getElementById('nameInput').value.trim(),p=document.getElementById('phoneInput').value.trim();msg.textContent=n&&p?'Reserva registrada em modo demonstração. O próximo passo será conectar ao banco de dados.':'Preencha seu nome e WhatsApp para continuar.'};
+document.getElementById('closeModal').onclick=()=>backdrop.classList.remove('open');backdrop.onclick=e=>{if(e.target===backdrop)backdrop.classList.remove('open')};
+document.getElementById('receiptBtn').onclick=()=>receiptModal.classList.add('open');document.getElementById('closeReceipt').onclick=()=>receiptModal.classList.remove('open');receiptModal.onclick=e=>{if(e.target===receiptModal)receiptModal.classList.remove('open')};
+document.getElementById('receiptSearch').onclick=()=>{const p=document.getElementById('receiptInput').value.trim();document.getElementById('receiptMessage').textContent=p?'Consulta em modo demonstração. O comprovante real será conectado na próxima etapa.':'Digite seu WhatsApp para consultar.'};
+document.querySelectorAll('.date-tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active')});

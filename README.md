@@ -1,17 +1,18 @@
-# 7Futevôlei
+# Agendamento
 
-Primeira versão do sistema de aulas inspirada no layout de referência.
+Protótipo genérico de uma plataforma para agendamento de aulas e atividades.
 
-## Rodar localmente
-
-Abra `index.html` no navegador.
+## Estrutura
+- `index.html` — interface
+- `styles.css` — visual responsivo
+- `app.js` — interações de demonstração
 
 ## Próximas etapas
-
 1. Conectar Supabase.
-2. Criar login de aluno.
-3. Criar área Admin.
-4. Salvar aulas, turmas e vagas no banco.
-5. Criar reservas reais.
-6. Gerar comprovante.
-7. Publicar na Vercel.
+2. Criar login e área administrativa.
+3. Cadastrar horários, turmas e vagas.
+4. Salvar reservas reais.
+5. Gerar e consultar comprovantes.
+6. Publicar alterações pela Vercel.
+
+As reservas desta versão são apenas demonstração e ainda não gravam dados em banco.
