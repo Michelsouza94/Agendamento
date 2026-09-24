@@ -1,0 +1,266 @@
+:root {
+  --bg: #fbf7ed;
+  --surface: #fffdf8;
+  --line: #d9e0e7;
+  --text: #123c68;
+  --muted: #7890ad;
+  --brand: #12b8aa;
+  --brand-dark: #0e9d92;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body { padding-bottom: 78px; }
+
+button, input { font: inherit; }
+
+button { cursor: pointer; }
+
+.container {
+  width: min(1248px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.topbar {
+  height: 50px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  color: var(--brand);
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-link {
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.page {
+  min-height: calc(100vh - 128px);
+  padding-top: 28px;
+}
+
+.field-label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.date-button {
+  background: var(--surface);
+  color: #123c68;
+  border: 1px solid #c8d5e2;
+  border-radius: 7px;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
+.slots { margin-top: 14px; }
+
+.slot {
+  border-bottom: 1px solid var(--line);
+}
+
+.slot-header {
+  width: 100%;
+  min-height: 57px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.chevron {
+  font-size: 23px;
+  color: #8ea3b8;
+  transition: transform .2s ease;
+}
+
+.slot.open .chevron { transform: rotate(90deg); }
+
+.time { font-size: 15px; font-weight: 600; }
+
+.availability {
+  color: var(--muted);
+  font-size: 13px;
+  padding-left: 16px;
+}
+
+.slot-content {
+  display: none;
+  padding: 0 0 14px 24px;
+  gap: 8px;
+}
+
+.slot.open .slot-content {
+  display: grid;
+}
+
+.class-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.class-card div {
+  display: grid;
+  gap: 4px;
+}
+
+.class-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.reserve, .primary {
+  border: 0;
+  border-radius: 6px;
+  padding: 9px 14px;
+  background: var(--brand);
+  color: white;
+  font-weight: 700;
+}
+
+.reserve:hover, .primary:hover {
+  background: var(--brand-dark);
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 58px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+.nav-item {
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  display: grid;
+  place-content: center;
+  gap: 3px;
+  font-size: 12px;
+}
+
+.nav-item.active { color: var(--brand); }
+
+.nav-icon {
+  text-align: center;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+dialog {
+  border: 0;
+  padding: 0;
+  border-radius: 12px;
+  width: min(440px, calc(100% - 32px));
+  box-shadow: 0 20px 70px rgba(0,0,0,.22);
+}
+
+dialog::backdrop {
+  background: rgba(9, 30, 48, .35);
+}
+
+.dialog-card {
+  position: relative;
+  padding: 26px;
+  display: grid;
+  gap: 14px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.dialog-card h2 { margin: 0; }
+
+.dialog-card label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dialog-card input {
+  width: 100%;
+  border: 1px solid #c8d5e2;
+  border-radius: 7px;
+  padding: 11px;
+  outline: none;
+}
+
+.dialog-card input:focus {
+  border-color: var(--brand);
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  color: var(--muted);
+}
+
+.muted, .notice {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.receipt {
+  display: grid;
+  gap: 8px;
+  border: 1px dashed #bdcad7;
+  border-radius: 8px;
+  padding: 16px;
+  background: white;
+}
+
+@media (max-width: 700px) {
+  .container { width: min(100% - 24px, 1248px); }
+  .page { padding-top: 22px; }
+  .slot-header { grid-template-columns: 22px 1fr; min-height: 60px; }
+  .availability {
+    grid-column: 2;
+    padding: 0 0 8px;
+    font-size: 12px;
+  }
+  .class-card { align-items: flex-start; }
+}
