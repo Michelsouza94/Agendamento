@@ -852,6 +852,72 @@
     }
 
 
+    
+    async function editarAula(id) {
+  const { data: aula, error } = await supabaseClient
+    .from("aulas")
+    .select("id, data, horario_inicio, horario_fim, turma, capacidade")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Erro ao carregar aula:", error);
+    alert("Não foi possível carregar os dados da aula.");
+    return;
+  }
+
+  const novaData = prompt("Data da aula (AAAA-MM-DD):", aula.data);
+  if (novaData === null) return;
+
+  const novoInicio = prompt(
+    "Horário de início (HH:MM):",
+    aula.horario_inicio.slice(0, 5)
+  );
+  if (novoInicio === null) return;
+
+  const novoFim = prompt(
+    "Horário de término (HH:MM):",
+    aula.horario_fim.slice(0, 5)
+  );
+  if (novoFim === null) return;
+
+  const novaTurma = prompt("Nome da turma:", aula.turma);
+  if (novaTurma === null) return;
+
+  const novaCapacidade = prompt(
+    "Capacidade:",
+    aula.capacidade
+  );
+  if (novaCapacidade === null) return;
+
+  const capacidadeNumero = Number(novaCapacidade);
+
+  if (!novaData || !novoInicio || !novoFim || !novaTurma || !capacidadeNumero) {
+    alert("Preencha todos os campos corretamente.");
+    return;
+  }
+
+  const { error: updateError } = await supabaseClient
+    .from("aulas")
+    .update({
+      data: novaData,
+      horario_inicio: novoInicio,
+      horario_fim: novoFim,
+      turma: novaTurma,
+      capacidade: capacidadeNumero
+    })
+    .eq("id", id);
+
+  if (updateError) {
+    console.error("Erro ao editar aula:", updateError);
+    alert("Não foi possível editar a aula.");
+    return;
+  }
+
+  alert("Aula atualizada com sucesso!");
+  await carregarAulas();
+}
+
     // ==========================================
     // CADASTRAR NOVA AULA
     // ==========================================
