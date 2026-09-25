@@ -17,7 +17,7 @@ const form = document.getElementById("reservationForm");
 const message = document.getElementById("formMessage");
 
 let aulas = [];
-let reservas = [];
+let reservasPorAula = {};
 let aulaSelecionada = null;
 let dataSelecionada = null;
 
@@ -39,9 +39,8 @@ async function carregarDados() {
     return;
   }
 
-  const { data: reservasData, error: reservasError } = await supabase
-    .from("reservas")
-    .select("id, aula_id, nome, whatsapp, created_at");
+  const { data: reservasData, error: reservasError } =
+  await supabase.rpc("contar_reservas_por_aula");
 
   if (reservasError) {
     console.error("Erro ao carregar reservas:", reservasError);
@@ -50,7 +49,12 @@ async function carregarDados() {
   }
 
   aulas = aulasData || [];
-  reservas = reservasData || [];
+
+reservasPorAula = {};
+
+(reservasData || []).forEach(item => {
+  reservasPorAula[item.aula_id] = Number(item.quantidade);
+});
 
   if (!aulas.length) {
     mostrarErro("Nenhuma aula disponível no momento.");
@@ -151,7 +155,7 @@ function horarioTexto(hora) {
 }
 
 function contarReservas(aulaId) {
-  return reservas.filter(reserva => reserva.aula_id === aulaId).length;
+  return reservasPorAula[aulaId] || 0;
 }
 
 function renderizarHorarios() {
@@ -379,11 +383,8 @@ document.getElementById("reserveBtn").addEventListener("click", async () => {
     return;
   }
 
-  reservas.push({
-  aula_id: aulaSelecionada.id,
-  nome: nome,
-  whatsapp: whatsapp
-});
+  reservasPorAula[aulaSelecionada.id] =
+  (reservasPorAula[aulaSelecionada.id] || 0) + 1;
 
   message.textContent =
     "Reserva confirmada! Seu horário foi reservado com sucesso.";
