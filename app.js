@@ -487,10 +487,45 @@ document.getElementById("receiptSearch").addEventListener("click", async () => {
   }
 
   if (!data || !data.length) {
+  const {
+    data: listaEsperaData,
+    error: listaEsperaError
+  } = await supabase.rpc(
+    "consultar_lista_espera_por_whatsapp",
+    {
+      p_whatsapp: whatsapp
+    }
+  );
+
+  if (listaEsperaError) {
+    console.error(
+      "Erro ao consultar lista de espera:",
+      listaEsperaError
+    );
+
     receiptMessage.textContent =
-      "Nenhuma reserva encontrada para esse WhatsApp.";
+      "Não foi possível consultar agora.";
     return;
   }
+
+  if (!listaEsperaData || !listaEsperaData.length) {
+    receiptMessage.textContent =
+      "Nenhuma reserva ou entrada na lista de espera encontrada para esse WhatsApp.";
+    return;
+  }
+
+  const espera = listaEsperaData[0];
+
+  receiptMessage.innerHTML = `
+    <strong>Entrada na lista de espera encontrada!</strong><br>
+    ${espera.nome}<br>
+    ${espera.turma}<br>
+    ${formatarData(espera.data).toLocaleDateString("pt-BR")}<br>
+    ${horarioTexto(espera.horario_inicio)} — ${horarioTexto(espera.horario_fim)}
+  `;
+
+  return;
+}
 
   const reserva = data[0];
 
