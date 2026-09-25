@@ -131,6 +131,46 @@
     </div>
 
     <div class="card">
+
+      <div style="margin-bottom: 25px;">
+  <h3>Nova aula</h3>
+
+  <form id="formNovaAula">
+
+    <div style="margin-bottom: 10px;">
+      <label for="novaData">Data:</label><br>
+      <input type="date" id="novaData" required>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="novoInicio">Horário de início:</label><br>
+      <input type="time" id="novoInicio" required>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="novoFim">Horário de fim:</label><br>
+      <input type="time" id="novoFim" required>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="novaTurma">Turma:</label><br>
+      <input type="text" id="novaTurma" placeholder="Ex.: Turma 05" required>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="novaCapacidade">Capacidade:</label><br>
+      <input type="number" id="novaCapacidade" min="1" value="8" required>
+    </div>
+
+    <button type="submit">
+      Cadastrar aula
+    </button>
+
+  </form>
+
+  <p id="mensagemNovaAula"></p>
+</div>
+      
   <h2>Aulas</h2>
 
   <div class="tabela-container">
