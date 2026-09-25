@@ -327,6 +327,11 @@ function abrirTurmas(inicio, fim) {
   if (!aulaSelecionada) return;
 
   modoListaEspera = botao.dataset.listaEspera === "true";
+      const botaoReserva = document.getElementById("reserveBtn");
+
+botaoReserva.textContent = modoListaEspera
+  ? "Entrar na lista de espera"
+  : "Confirmar reserva";
 
   form.classList.remove("hidden");
   message.textContent = "";
@@ -356,41 +361,69 @@ document.getElementById("reserveBtn").addEventListener("click", async () => {
 
   const reservasAtuais = contarReservas(aulaSelecionada.id);
 
-  if (reservasAtuais >= Number(aulaSelecionada.capacidade)) {
-    message.textContent = "Essa turma acabou de ficar lotada.";
-    return;
-  }
+if (
+  !modoListaEspera &&
+  reservasAtuais >= Number(aulaSelecionada.capacidade)
+) {
+  message.textContent = "Essa turma acabou de ficar lotada.";
+  return;
+}
 
   const botao = document.getElementById("reserveBtn");
 
   botao.disabled = true;
   botao.textContent = "Confirmando...";
 
-  const { error } = await supabase
-  .from("reservas")
-  .insert([
-    {
-      aula_id: aulaSelecionada.id,
-      nome: nome,
-      whatsapp: whatsapp
-    }
-  ]);
+  let data;
+let error;
+
+if (modoListaEspera) {
+  const resposta = await supabase.rpc("entrar_lista_espera", {
+    p_aula_id: aulaSelecionada.id,
+    p_nome: nome,
+    p_whatsapp: whatsapp
+  });
+
+  data = resposta.data;
+  error = resposta.error;
+} else {
+  const resposta = await supabase.rpc("reservar_aula", {
+    p_aula_id: aulaSelecionada.id,
+    p_nome: nome,
+    p_whatsapp: whatsapp
+  });
+
+  data = resposta.data;
+  error = resposta.error;
+}
 
   botao.disabled = false;
   botao.textContent = "Confirmar reserva";
 
   if (error) {
-    console.error("Erro ao reservar:", error);
-    message.textContent =
-      "Não foi possível realizar a reserva. Tente novamente.";
-    return;
-  }
+  console.error("Erro:", error);
+  message.textContent =
+    "Não foi possível concluir. Tente novamente.";
+  return;
+}
 
+const resultado = data?.[0];
+
+if (!resultado?.sucesso) {
+  message.textContent =
+    resultado?.mensagem || "Não foi possível concluir.";
+  return;
+}
+
+ if (modoListaEspera) {
+  message.textContent = "Você entrou na lista de espera.";
+} else {
   reservasPorAula[aulaSelecionada.id] =
-  (reservasPorAula[aulaSelecionada.id] || 0) + 1;
+    (reservasPorAula[aulaSelecionada.id] || 0) + 1;
 
   message.textContent =
     "Reserva confirmada! Seu horário foi reservado com sucesso.";
+}
 
   document.getElementById("nameInput").value = "";
   document.getElementById("phoneInput").value = "";
