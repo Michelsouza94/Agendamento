@@ -433,21 +433,14 @@ document.getElementById("receiptSearch").addEventListener("click", async () => {
     return;
   }
 
-  const { data, error } = await supabase
-    .from("reservas")
-    .select(`
-      id,
-      nome,
-      whatsapp,
-      aulas (
-        data,
-        horario_inicio,
-        horario_fim,
-        turma
-      )
-    `)
-    .eq("whatsapp", whatsapp)
-    .order("created_at", { ascending: false });
+  receiptMessage.textContent = "Consultando...";
+
+  const { data, error } = await supabase.rpc(
+    "consultar_reserva_por_whatsapp",
+    {
+      p_whatsapp: whatsapp
+    }
+  );
 
   if (error) {
     console.error("Erro ao consultar reserva:", error);
@@ -464,14 +457,12 @@ document.getElementById("receiptSearch").addEventListener("click", async () => {
 
   const reserva = data[0];
 
-  const aula = reserva.aulas;
-
   receiptMessage.innerHTML = `
     <strong>Reserva encontrada!</strong><br>
     ${reserva.nome}<br>
-    ${aula.turma}<br>
-    ${formatarData(aula.data).toLocaleDateString("pt-BR")}<br>
-    ${horarioTexto(aula.horario_inicio)} — ${horarioTexto(aula.horario_fim)}
+    ${reserva.turma}<br>
+    ${formatarData(reserva.data).toLocaleDateString("pt-BR")}<br>
+    ${horarioTexto(reserva.horario_inicio)} — ${horarioTexto(reserva.horario_fim)}
   `;
 });
 
