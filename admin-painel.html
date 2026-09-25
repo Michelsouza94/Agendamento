@@ -983,6 +983,19 @@
     block: "start"
   });
 }
+    
+    document
+  .getElementById("cancelarEdicaoAula")
+  .addEventListener("click", () => {
+
+    document.getElementById(
+      "formEdicaoAula"
+    ).style.display = "none";
+
+    document.getElementById(
+      "mensagemEdicaoAula"
+    ).textContent = "";
+  });
 
     document
   .getElementById("salvarEdicaoAula")
