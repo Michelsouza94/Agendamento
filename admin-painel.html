@@ -61,6 +61,33 @@
     #status {
       color: #555;
     }
+
+    .tabela-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #f5f5f5;
+    }
+
+    .sem-reservas {
+      color: #666;
+      margin-top: 15px;
+    }
   </style>
 </head>
 
@@ -80,7 +107,27 @@
 
     <div class="card">
       <h2>Reservas</h2>
-      <p>Em breve veremos aqui todas as reservas realizadas.</p>
+
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>WhatsApp</th>
+              <th>Data</th>
+              <th>Horário</th>
+              <th>Turma</th>
+            </tr>
+          </thead>
+
+          <tbody id="reservasTabela">
+          </tbody>
+        </table>
+      </div>
+
+      <p id="semReservas" class="sem-reservas" style="display: none;">
+        Nenhuma reserva encontrada.
+      </p>
     </div>
 
     <div class="card">
@@ -111,6 +158,86 @@
 
       document.getElementById("status").textContent =
         "Login realizado com sucesso: " + data.user.email;
+
+      await carregarReservas();
+    }
+
+    async function carregarReservas() {
+      const { data: reservas, error: reservasError } =
+        await supabaseClient
+          .from("reservas")
+          .select("id, aula_id, nome, whatsapp, created_at")
+          .order("created_at", { ascending: false });
+
+      if (reservasError) {
+        console.error(reservasError);
+        document.getElementById("semReservas").textContent =
+          "Não foi possível carregar as reservas.";
+        document.getElementById("semReservas").style.display = "block";
+        return;
+      }
+
+      const tabela = document.getElementById("reservasTabela");
+      const semReservas = document.getElementById("semReservas");
+
+      tabela.innerHTML = "";
+
+      if (!reservas || reservas.length === 0) {
+        semReservas.style.display = "block";
+        return;
+      }
+
+      const aulaIds = [...new Set(reservas.map(reserva => reserva.aula_id))];
+
+      const { data: aulas, error: aulasError } =
+        await supabaseClient
+          .from("aulas")
+          .select("id, data, horario_inicio, horario_fim, turma")
+          .in("id", aulaIds);
+
+      if (aulasError) {
+        console.error(aulasError);
+        semReservas.textContent =
+          "As reservas foram encontradas, mas não foi possível carregar os horários.";
+        semReservas.style.display = "block";
+        return;
+      }
+
+      const aulasPorId = {};
+
+      aulas.forEach(aula => {
+        aulasPorId[aula.id] = aula;
+      });
+
+      reservas.forEach(reserva => {
+        const aula = aulasPorId[reserva.aula_id];
+
+        const linha = document.createElement("tr");
+
+        const dataFormatada = aula
+          ? aula.data.split("-").reverse().join("/")
+          : "-";
+
+        const horario = aula
+          ? `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`
+          : "-";
+
+        const turma = aula
+          ? aula.turma
+          : "-";
+
+        linha.innerHTML = `
+          <td>${reserva.nome}</td>
+          <td>${reserva.whatsapp}</td>
+          <td>${dataFormatada}</td>
+          <td>${horario}</td>
+          <td>${turma}</td>
+        `;
+
+        tabela.appendChild(linha);
+      });
+
+      semReservas.style.display = "none";
     }
 
     document.getElementById("logoutBtn").addEventListener("click", async () => {
