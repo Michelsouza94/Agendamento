@@ -20,6 +20,7 @@ let aulas = [];
 let reservasPorAula = {};
 let aulaSelecionada = null;
 let dataSelecionada = null;
+let modoListaEspera = false;
 
 // --------------------------------------------------
 // CARREGAR DADOS
@@ -296,7 +297,7 @@ function abrirTurmas(inicio, fim) {
         <button
           class="class-option"
           data-aula-id="${aula.id}"
-          ${vagasRestantes <= 0 ? "disabled" : ""}
+         ${vagasRestantes <= 0 ? 'data-lista-espera="true"' : ""}
         >
           <span>
             <strong>${aula.turma}</strong>
@@ -319,15 +320,17 @@ function abrirTurmas(inicio, fim) {
 
   opcoes.querySelectorAll(".class-option").forEach(botao => {
     botao.addEventListener("click", () => {
-      aulaSelecionada = aulas.find(
-        aula => aula.id === botao.dataset.aulaId
-      );
+  aulaSelecionada = aulas.find(
+    aula => aula.id === botao.dataset.aulaId
+  );
 
-      if (!aulaSelecionada) return;
+  if (!aulaSelecionada) return;
 
-      form.classList.remove("hidden");
-      message.textContent = "";
-    });
+  modoListaEspera = botao.dataset.listaEspera === "true";
+
+  form.classList.remove("hidden");
+  message.textContent = "";
+});
   });
 
   backdrop.classList.add("open");
