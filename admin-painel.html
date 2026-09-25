@@ -984,6 +984,85 @@
   });
 }
 
+    document
+  .getElementById("salvarEdicaoAula")
+  .addEventListener("click", async () => {
+
+    const id =
+      document.getElementById("editarAulaId").value;
+
+    const data =
+      document.getElementById("editarData").value;
+
+    const horarioInicio =
+      document.getElementById("editarInicio").value;
+
+    const horarioFim =
+      document.getElementById("editarFim").value;
+
+    const turma =
+      document.getElementById("editarTurma").value.trim();
+
+    const capacidade =
+      Number(
+        document.getElementById("editarCapacidade").value
+      );
+
+    const mensagem =
+      document.getElementById("mensagemEdicaoAula");
+
+    if (
+      !id ||
+      !data ||
+      !horarioInicio ||
+      !horarioFim ||
+      !turma ||
+      !capacidade
+    ) {
+      mensagem.textContent =
+        "Preencha todos os campos corretamente.";
+      return;
+    }
+
+    mensagem.textContent =
+      "Salvando alterações...";
+
+    const { error } =
+      await supabaseClient
+        .from("aulas")
+        .update({
+          data: data,
+          horario_inicio: horarioInicio,
+          horario_fim: horarioFim,
+          turma: turma,
+          capacidade: capacidade
+        })
+        .eq("id", id);
+
+    if (error) {
+      console.error(
+        "Erro ao salvar edição:",
+        error
+      );
+
+      mensagem.textContent =
+        "Não foi possível salvar as alterações.";
+
+      return;
+    }
+
+    mensagem.textContent =
+      "Aula atualizada com sucesso!";
+
+    await carregarAulas();
+
+    setTimeout(() => {
+      document.getElementById(
+        "formEdicaoAula"
+      ).style.display = "none";
+    }, 800);
+  });
+
     // ==========================================
     // CADASTRAR NOVA AULA
     // ==========================================
