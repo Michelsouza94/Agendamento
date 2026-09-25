@@ -131,9 +131,29 @@
     </div>
 
     <div class="card">
-      <h2>Aulas</h2>
-      <p>Em breve poderemos criar e editar os horários das aulas.</p>
-    </div>
+  <h2>Aulas</h2>
+
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Horário</th>
+          <th>Turma</th>
+          <th>Capacidade</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="aulasTabela">
+      </tbody>
+    </table>
+  </div>
+
+  <p id="semAulas" class="sem-reservas" style="display: none;">
+    Nenhuma aula encontrada.
+  </p>
+</div>
 
   </main>
 
@@ -176,6 +196,58 @@
         document.getElementById("semReservas").style.display = "block";
         return;
       }
+
+      async function carregarAulas() {
+  const { data: aulas, error } =
+    await supabaseClient
+      .from("aulas")
+      .select("id, data, horario_inicio, horario_fim, turma, capacidade, ativo")
+      .order("data", { ascending: true })
+      .order("horario_inicio", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const tabela = document.getElementById("aulasTabela");
+  const semAulas = document.getElementById("semAulas");
+
+  tabela.innerHTML = "";
+
+  if (!aulas || aulas.length === 0) {
+    semAulas.style.display = "block";
+    return;
+  }
+
+  aulas.forEach(aula => {
+    const linha = document.createElement("tr");
+
+    const dataFormatada = aula.data
+      .split("-")
+      .reverse()
+      .join("/");
+
+    const horario =
+      `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`;
+
+    const status = aula.ativo
+      ? "Ativa"
+      : "Inativa";
+
+    linha.innerHTML = `
+      <td>${dataFormatada}</td>
+      <td>${horario}</td>
+      <td>${aula.turma}</td>
+      <td>${aula.capacidade}</td>
+      <td>${status}</td>
+    `;
+
+    tabela.appendChild(linha);
+  });
+
+  semAulas.style.display = "none";
+}
 
       const tabela = document.getElementById("reservasTabela");
       const semReservas = document.getElementById("semReservas");
@@ -246,6 +318,7 @@
     });
 
     verificarAcesso();
+carregarAulas();
   </script>
 
 </body>
