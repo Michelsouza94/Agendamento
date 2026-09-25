@@ -359,17 +359,15 @@ document.getElementById("reserveBtn").addEventListener("click", async () => {
   botao.disabled = true;
   botao.textContent = "Confirmando...";
 
-  const { data, error } = await supabase
-    .from("reservas")
-    .insert([
-      {
-        aula_id: aulaSelecionada.id,
-        nome: nome,
-        whatsapp: whatsapp
-      }
-    ])
-    .select()
-    .single();
+  const { error } = await supabase
+  .from("reservas")
+  .insert([
+    {
+      aula_id: aulaSelecionada.id,
+      nome: nome,
+      whatsapp: whatsapp
+    }
+  ]);
 
   botao.disabled = false;
   botao.textContent = "Confirmar reserva";
@@ -381,7 +379,11 @@ document.getElementById("reserveBtn").addEventListener("click", async () => {
     return;
   }
 
-  reservas.push(data);
+  reservas.push({
+  aula_id: aulaSelecionada.id,
+  nome: nome,
+  whatsapp: whatsapp
+});
 
   message.textContent =
     "Reserva confirmada! Seu horário foi reservado com sucesso.";
