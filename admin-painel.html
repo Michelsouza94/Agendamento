@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Painel Administrativo - Agendamento</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -88,374 +91,928 @@
       color: #666;
       margin-top: 15px;
     }
+
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #formNovaAula button {
+      background: #111;
+      color: white;
+    }
+
+    #formNovaAula button:hover {
+      opacity: 0.9;
+    }
+
+    #aulasTabela button {
+      background: #111;
+      color: white;
+    }
+
+    #aulasTabela button:hover {
+      opacity: 0.9;
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
   <header>
+
     <h1>Área administrativa</h1>
-    <button id="logoutBtn">Sair</button>
+
+    <button id="logoutBtn">
+      Sair
+    </button>
+
   </header>
+
 
   <main>
 
-    <div class="card">
-      <h2>Bem-vindo!</h2>
-      <p id="status">Verificando acesso...</p>
-    </div>
+    <!-- STATUS DO LOGIN -->
 
     <div class="card">
+
+      <h2>Bem-vindo!</h2>
+
+      <p id="status">
+        Verificando acesso...
+      </p>
+
+    </div>
+
+
+    <!-- RESERVAS -->
+
+    <div class="card">
+
       <h2>Reservas</h2>
 
       <div class="tabela-container">
+
         <table>
+
           <thead>
+
             <tr>
+
               <th>Cliente</th>
+
               <th>WhatsApp</th>
+
               <th>Data</th>
+
               <th>Horário</th>
+
               <th>Turma</th>
+
             </tr>
+
           </thead>
+
 
           <tbody id="reservasTabela">
           </tbody>
+
         </table>
+
       </div>
 
-      <p id="semReservas" class="sem-reservas" style="display: none;">
+
+      <p
+        id="semReservas"
+        class="sem-reservas"
+        style="display: none;"
+      >
         Nenhuma reserva encontrada.
       </p>
+
     </div>
+
+
+    <!-- AULAS -->
 
     <div class="card">
 
+      <!-- NOVA AULA -->
+
       <div style="margin-bottom: 25px;">
-  <h3>Nova aula</h3>
 
-  <form id="formNovaAula">
+        <h3>Nova aula</h3>
 
-    <div style="margin-bottom: 10px;">
-      <label for="novaData">Data:</label><br>
-      <input type="date" id="novaData" required>
+
+        <form id="formNovaAula">
+
+
+          <div style="margin-bottom: 10px;">
+
+            <label for="novaData">
+              Data:
+            </label>
+
+            <br>
+
+            <input
+              type="date"
+              id="novaData"
+              required
+            >
+
+          </div>
+
+
+          <div style="margin-bottom: 10px;">
+
+            <label for="novoInicio">
+              Horário de início:
+            </label>
+
+            <br>
+
+            <input
+              type="time"
+              id="novoInicio"
+              required
+            >
+
+          </div>
+
+
+          <div style="margin-bottom: 10px;">
+
+            <label for="novoFim">
+              Horário de fim:
+            </label>
+
+            <br>
+
+            <input
+              type="time"
+              id="novoFim"
+              required
+            >
+
+          </div>
+
+
+          <div style="margin-bottom: 10px;">
+
+            <label for="novaTurma">
+              Turma:
+            </label>
+
+            <br>
+
+            <input
+              type="text"
+              id="novaTurma"
+              placeholder="Ex.: Turma 05"
+              required
+            >
+
+          </div>
+
+
+          <div style="margin-bottom: 10px;">
+
+            <label for="novaCapacidade">
+              Capacidade:
+            </label>
+
+            <br>
+
+            <input
+              type="number"
+              id="novaCapacidade"
+              min="1"
+              value="8"
+              required
+            >
+
+          </div>
+
+
+          <button type="submit">
+            Cadastrar aula
+          </button>
+
+
+        </form>
+
+
+        <p id="mensagemNovaAula"></p>
+
+      </div>
+
+
+      <!-- LISTA DE AULAS -->
+
+      <h2>
+        Aulas
+      </h2>
+
+
+      <div class="tabela-container">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Data</th>
+
+              <th>Horário</th>
+
+              <th>Turma</th>
+
+              <th>Capacidade</th>
+
+              <th>Status</th>
+
+              <th>Ações</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody id="aulasTabela">
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <p
+        id="semAulas"
+        class="sem-reservas"
+        style="display: none;"
+      >
+        Nenhuma aula encontrada.
+      </p>
+
+
     </div>
 
-    <div style="margin-bottom: 10px;">
-      <label for="novoInicio">Horário de início:</label><br>
-      <input type="time" id="novoInicio" required>
-    </div>
-
-    <div style="margin-bottom: 10px;">
-      <label for="novoFim">Horário de fim:</label><br>
-      <input type="time" id="novoFim" required>
-    </div>
-
-    <div style="margin-bottom: 10px;">
-      <label for="novaTurma">Turma:</label><br>
-      <input type="text" id="novaTurma" placeholder="Ex.: Turma 05" required>
-    </div>
-
-    <div style="margin-bottom: 10px;">
-      <label for="novaCapacidade">Capacidade:</label><br>
-      <input type="number" id="novaCapacidade" min="1" value="8" required>
-    </div>
-
-    <button type="submit">
-      Cadastrar aula
-    </button>
-
-  </form>
-
-  <p id="mensagemNovaAula"></p>
-</div>
-      
-  <h2>Aulas</h2>
-
-  <div class="tabela-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Horário</th>
-          <th>Turma</th>
-          <th>Capacidade</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-
-      <tbody id="aulasTabela">
-      </tbody>
-    </table>
-  </div>
-
-  <p id="semAulas" class="sem-reservas" style="display: none;">
-    Nenhuma aula encontrada.
-  </p>
-</div>
 
   </main>
 
+
+  <!-- SUPABASE -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-    const SUPABASE_URL = "https://ezxrcpnkdvnhugpdcjup.supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8hZQrzNuLgy6jyZWgYY7cA_q0Njvqjg";
 
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+  <script>
+
+    // ==========================================
+    // CONFIGURAÇÃO SUPABASE
+    // ==========================================
+
+    const SUPABASE_URL =
+      "https://ezxrcpnkdvnhugpdcjup.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_8hZQrzNuLgy6jyZWgYY7cA_q0Njvqjg";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+
+    // ==========================================
+    // VERIFICAR ACESSO
+    // ==========================================
 
     async function verificarAcesso() {
-      const { data, error } = await supabaseClient.auth.getUser();
+
+      const { data, error } =
+        await supabaseClient.auth.getUser();
+
 
       if (error || !data.user) {
+
         window.location.href = "admin.html";
+
         return;
       }
+
 
       document.getElementById("status").textContent =
-        "Login realizado com sucesso: " + data.user.email;
+        "Login realizado com sucesso: " +
+        data.user.email;
+
 
       await carregarReservas();
+
+      await carregarAulas();
+
     }
 
+
+    // ==========================================
+    // CARREGAR RESERVAS
+    // ==========================================
+
     async function carregarReservas() {
-      const { data: reservas, error: reservasError } =
+
+      const {
+        data: reservas,
+        error: reservasError
+      } =
         await supabaseClient
           .from("reservas")
-          .select("id, aula_id, nome, whatsapp, created_at")
-          .order("created_at", { ascending: false });
+          .select(
+            "id, aula_id, nome, whatsapp, created_at"
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
 
       if (reservasError) {
-        console.error(reservasError);
-        document.getElementById("semReservas").textContent =
+
+        console.error(
+          "Erro ao carregar reservas:",
+          reservasError
+        );
+
+
+        document.getElementById(
+          "semReservas"
+        ).textContent =
           "Não foi possível carregar as reservas.";
-        document.getElementById("semReservas").style.display = "block";
+
+
+        document.getElementById(
+          "semReservas"
+        ).style.display = "block";
+
+
         return;
       }
 
-      async function carregarAulas() {
-  const { data: aulas, error } =
-    await supabaseClient
-      .from("aulas")
-      .select("id, data, horario_inicio, horario_fim, turma, capacidade, ativo")
-      .order("data", { ascending: true })
-      .order("horario_inicio", { ascending: true });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+      const tabela =
+        document.getElementById(
+          "reservasTabela"
+        );
 
-  const tabela = document.getElementById("aulasTabela");
-  const semAulas = document.getElementById("semAulas");
 
-  tabela.innerHTML = "";
+      const semReservas =
+        document.getElementById(
+          "semReservas"
+        );
 
-  if (!aulas || aulas.length === 0) {
-    semAulas.style.display = "block";
-    return;
-  }
-
-  aulas.forEach(aula => {
-    const linha = document.createElement("tr");
-
-    const dataFormatada = aula.data
-      .split("-")
-      .reverse()
-      .join("/");
-
-    const horario =
-      `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`;
-
-    const status = aula.ativo
-      ? "Ativa"
-      : "Inativa";
-
-    linha.innerHTML = `
-      <td>${dataFormatada}</td>
-      <td>${horario}</td>
-      <td>${aula.turma}</td>
-      <td>${aula.capacidade}</td>
-      <td>${status}</td>
-    `;
-
-    tabela.appendChild(linha);
-  });
-
-  semAulas.style.display = "none";
-}
-
-      const tabela = document.getElementById("reservasTabela");
-      const semReservas = document.getElementById("semReservas");
 
       tabela.innerHTML = "";
 
-      if (!reservas || reservas.length === 0) {
-        semReservas.style.display = "block";
+
+      if (
+        !reservas ||
+        reservas.length === 0
+      ) {
+
+        semReservas.style.display =
+          "block";
+
         return;
       }
 
-      const aulaIds = [...new Set(reservas.map(reserva => reserva.aula_id))];
 
-      const { data: aulas, error: aulasError } =
+      // IDs das aulas relacionadas às reservas
+
+      const aulaIds = [
+        ...new Set(
+          reservas.map(
+            reserva => reserva.aula_id
+          )
+        )
+      ];
+
+
+      const {
+        data: aulas,
+        error: aulasError
+      } =
         await supabaseClient
           .from("aulas")
-          .select("id, data, horario_inicio, horario_fim, turma")
-          .in("id", aulaIds);
+          .select(
+            "id, data, horario_inicio, horario_fim, turma"
+          )
+          .in(
+            "id",
+            aulaIds
+          );
+
 
       if (aulasError) {
-        console.error(aulasError);
+
+        console.error(
+          "Erro ao carregar aulas das reservas:",
+          aulasError
+        );
+
+
         semReservas.textContent =
           "As reservas foram encontradas, mas não foi possível carregar os horários.";
-        semReservas.style.display = "block";
+
+
+        semReservas.style.display =
+          "block";
+
+
         return;
       }
+
 
       const aulasPorId = {};
 
+
       aulas.forEach(aula => {
-        aulasPorId[aula.id] = aula;
+
+        aulasPorId[aula.id] =
+          aula;
+
       });
+
 
       reservas.forEach(reserva => {
-        const aula = aulasPorId[reserva.aula_id];
 
-        const linha = document.createElement("tr");
+        const aula =
+          aulasPorId[
+            reserva.aula_id
+          ];
 
-        const dataFormatada = aula
-          ? aula.data.split("-").reverse().join("/")
-          : "-";
 
-        const horario = aula
-          ? `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`
-          : "-";
+        const linha =
+          document.createElement("tr");
 
-        const turma = aula
-          ? aula.turma
-          : "-";
+
+        const dataFormatada =
+          aula
+            ? aula.data
+                .split("-")
+                .reverse()
+                .join("/")
+            : "-";
+
+
+        const horario =
+          aula
+            ? `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`
+            : "-";
+
+
+        const turma =
+          aula
+            ? aula.turma
+            : "-";
+
 
         linha.innerHTML = `
-          <td>${reserva.nome}</td>
-          <td>${reserva.whatsapp}</td>
-          <td>${dataFormatada}</td>
-          <td>${horario}</td>
-          <td>${turma}</td>
+
+          <td>
+            ${reserva.nome}
+          </td>
+
+          <td>
+            ${reserva.whatsapp}
+          </td>
+
+          <td>
+            ${dataFormatada}
+          </td>
+
+          <td>
+            ${horario}
+          </td>
+
+          <td>
+            ${turma}
+          </td>
+
         `;
 
-        tabela.appendChild(linha);
+
+        tabela.appendChild(
+          linha
+        );
+
       });
 
-      semReservas.style.display = "none";
+
+      semReservas.style.display =
+        "none";
+
     }
 
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await supabaseClient.auth.signOut();
-      window.location.href = "admin.html";
-    });
 
-    verificarAcesso();
-    carregarAulas();
+    // ==========================================
+    // CARREGAR AULAS
+    // ==========================================
 
     async function carregarAulas() {
-  const { data: aulas, error } = await supabaseClient
-    .from("aulas")
-    .select("id, data, horario_inicio, horario_fim, turma, capacidade, ativo")
-    .order("data", { ascending: true })
-    .order("horario_inicio", { ascending: true });
 
-  if (error) {
-    console.error("Erro ao carregar aulas:", error);
-    return;
-  }
+      const {
+        data: aulas,
+        error
+      } =
+        await supabaseClient
+          .from("aulas")
+          .select(
+            "id, data, horario_inicio, horario_fim, turma, capacidade, ativo"
+          )
+          .order(
+            "data",
+            {
+              ascending: true
+            }
+          )
+          .order(
+            "horario_inicio",
+            {
+              ascending: true
+            }
+          );
 
-  const tabela = document.getElementById("aulasTabela");
 
-  if (!tabela) {
-    console.error("Elemento aulasTabela não encontrado.");
-    return;
-  }
+      if (error) {
 
-  tabela.innerHTML = "";
+        console.error(
+          "Erro ao carregar aulas:",
+          error
+        );
 
-  if (!aulas || aulas.length === 0) {
-    const linha = document.createElement("tr");
+        return;
+      }
 
-    linha.innerHTML = `
-      <td colspan="5">Nenhuma aula encontrada.</td>
-    `;
 
-    tabela.appendChild(linha);
-    return;
-  }
+      const tabela =
+        document.getElementById(
+          "aulasTabela"
+        );
 
-  aulas.forEach(aula => {
-    const linha = document.createElement("tr");
 
-    const dataFormatada = aula.data
-      .split("-")
-      .reverse()
-      .join("/");
+      const semAulas =
+        document.getElementById(
+          "semAulas"
+        );
 
-    const horario =
-      `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`;
 
-    const status = aula.ativo ? "Ativa" : "Inativa";
+      if (!tabela) {
 
-    linha.innerHTML = `
-      <td>${dataFormatada}</td>
-      <td>${horario}</td>
-      <td>${aula.turma}</td>
-      <td>${aula.capacidade}</td>
-      <td>${status}</td>
-    `;
+        console.error(
+          "Elemento aulasTabela não encontrado."
+        );
 
-    tabela.appendChild(linha);
-  });
-}
+        return;
+      }
 
-    document.getElementById("formNovaAula").addEventListener("submit", async (event) => {
-  event.preventDefault();
 
-  const data = document.getElementById("novaData").value;
-  const horarioInicio = document.getElementById("novoInicio").value;
-  const horarioFim = document.getElementById("novoFim").value;
-  const turma = document.getElementById("novaTurma").value;
-  const capacidade = Number(document.getElementById("novaCapacidade").value);
-  const mensagem = document.getElementById("mensagemNovaAula");
+      tabela.innerHTML = "";
 
-  mensagem.textContent = "Cadastrando aula...";
 
-  const { error } = await supabaseClient
-    .from("aulas")
-    .insert({
-      data: data,
-      horario_inicio: horarioInicio,
-      horario_fim: horarioFim,
-      turma: turma,
-      capacidade: capacidade,
-      ativo: true
-    });
+      if (
+        !aulas ||
+        aulas.length === 0
+      ) {
 
-  if (error) {
-    console.error("Erro ao cadastrar aula:", error);
-    mensagem.textContent = "Erro ao cadastrar aula.";
-    return;
-  }
+        semAulas.style.display =
+          "block";
 
-  mensagem.textContent = "Aula cadastrada com sucesso!";
+        return;
+      }
 
-  document.getElementById("formNovaAula").reset();
-  document.getElementById("novaCapacidade").value = 8;
 
-  await carregarAulas();
-});
-    
+      aulas.forEach(aula => {
+
+        const linha =
+          document.createElement(
+            "tr"
+          );
+
+
+        const dataFormatada =
+          aula.data
+            .split("-")
+            .reverse()
+            .join("/");
+
+
+        const horario =
+          `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`;
+
+
+        const status =
+          aula.ativo
+            ? "Ativa"
+            : "Inativa";
+
+
+        const acao =
+          aula.ativo
+
+            ? `
+              <button
+                onclick="alterarStatusAula('${aula.id}', false)"
+              >
+                Desativar
+              </button>
+            `
+
+            : `
+              <button
+                onclick="alterarStatusAula('${aula.id}', true)"
+              >
+                Ativar
+              </button>
+            `;
+
+
+        linha.innerHTML = `
+
+          <td>
+            ${dataFormatada}
+          </td>
+
+          <td>
+            ${horario}
+          </td>
+
+          <td>
+            ${aula.turma}
+          </td>
+
+          <td>
+            ${aula.capacidade}
+          </td>
+
+          <td>
+            ${status}
+          </td>
+
+          <td>
+            ${acao}
+          </td>
+
+        `;
+
+
+        tabela.appendChild(
+          linha
+        );
+
+      });
+
+
+      semAulas.style.display =
+        "none";
+
+    }
+
+
+    // ==========================================
+    // ATIVAR / DESATIVAR AULA
+    // ==========================================
+
+    async function alterarStatusAula(
+      id,
+      novoStatus
+    ) {
+
+      const acaoTexto =
+        novoStatus
+          ? "ativar"
+          : "desativar";
+
+
+      const confirmar =
+        confirm(
+          `Tem certeza que deseja ${acaoTexto} esta aula?`
+        );
+
+
+      if (!confirmar) {
+
+        return;
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("aulas")
+          .update({
+            ativo: novoStatus
+          })
+          .eq(
+            "id",
+            id
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao alterar status da aula:",
+          error
+        );
+
+
+        alert(
+          "Não foi possível alterar o status da aula."
+        );
+
+
+        return;
+      }
+
+
+      await carregarAulas();
+
+    }
+
+
+    // ==========================================
+    // CADASTRAR NOVA AULA
+    // ==========================================
+
+    document
+      .getElementById(
+        "formNovaAula"
+      )
+      .addEventListener(
+        "submit",
+        async (event) => {
+
+          event.preventDefault();
+
+
+          const data =
+            document.getElementById(
+              "novaData"
+            ).value;
+
+
+          const horarioInicio =
+            document.getElementById(
+              "novoInicio"
+            ).value;
+
+
+          const horarioFim =
+            document.getElementById(
+              "novoFim"
+            ).value;
+
+
+          const turma =
+            document.getElementById(
+              "novaTurma"
+            ).value;
+
+
+          const capacidade =
+            Number(
+              document.getElementById(
+                "novaCapacidade"
+              ).value
+            );
+
+
+          const mensagem =
+            document.getElementById(
+              "mensagemNovaAula"
+            );
+
+
+          mensagem.textContent =
+            "Cadastrando aula...";
+
+
+          const {
+            error
+          } =
+            await supabaseClient
+              .from("aulas")
+              .insert({
+
+                data: data,
+
+                horario_inicio:
+                  horarioInicio,
+
+                horario_fim:
+                  horarioFim,
+
+                turma: turma,
+
+                capacidade:
+                  capacidade,
+
+                ativo: true
+
+              });
+
+
+          if (error) {
+
+            console.error(
+              "Erro ao cadastrar aula:",
+              error
+            );
+
+
+            mensagem.textContent =
+              "Erro ao cadastrar aula.";
+
+
+            return;
+          }
+
+
+          mensagem.textContent =
+            "Aula cadastrada com sucesso!";
+
+
+          document
+            .getElementById(
+              "formNovaAula"
+            )
+            .reset();
+
+
+          document
+            .getElementById(
+              "novaCapacidade"
+            )
+            .value = 8;
+
+
+          await carregarAulas();
+
+        }
+      );
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    document
+      .getElementById(
+        "logoutBtn"
+      )
+      .addEventListener(
+        "click",
+        async () => {
+
+          await supabaseClient
+            .auth
+            .signOut();
+
+
+          window.location.href =
+            "admin.html";
+
+        }
+      );
+
+
+    // ==========================================
+    // INICIAR PAINEL
+    // ==========================================
+
+    verificarAcesso();
+
   </script>
 
 </body>
+
 </html>
