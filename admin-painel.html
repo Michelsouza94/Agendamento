@@ -737,21 +737,14 @@
         const acao =
           aula.ativo
 
-            ? `
-              <button
-                onclick="alterarStatusAula('${aula.id}', false)"
-              >
-                Desativar
-              </button>
-            `
-
-            : `
-              <button
-                onclick="alterarStatusAula('${aula.id}', true)"
-              >
-                Ativar
-              </button>
-            `;
+            const acao = `
+  <button onclick="editarAula('${aula.id}')">Editar</button>
+  ${
+    aula.ativo
+      ? `<button onclick="alterarStatusAula('${aula.id}', false)">Desativar</button>`
+      : `<button onclick="alterarStatusAula('${aula.id}', true)">Ativar</button>`
+  }
+`;
 
 
         linha.innerHTML = `
