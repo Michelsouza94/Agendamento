@@ -416,6 +416,43 @@
     tabela.appendChild(linha);
   });
 }
+
+    document.getElementById("formNovaAula").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const data = document.getElementById("novaData").value;
+  const horarioInicio = document.getElementById("novoInicio").value;
+  const horarioFim = document.getElementById("novoFim").value;
+  const turma = document.getElementById("novaTurma").value;
+  const capacidade = Number(document.getElementById("novaCapacidade").value);
+  const mensagem = document.getElementById("mensagemNovaAula");
+
+  mensagem.textContent = "Cadastrando aula...";
+
+  const { error } = await supabaseClient
+    .from("aulas")
+    .insert({
+      data: data,
+      horario_inicio: horarioInicio,
+      horario_fim: horarioFim,
+      turma: turma,
+      capacidade: capacidade,
+      ativo: true
+    });
+
+  if (error) {
+    console.error("Erro ao cadastrar aula:", error);
+    mensagem.textContent = "Erro ao cadastrar aula.";
+    return;
+  }
+
+  mensagem.textContent = "Aula cadastrada com sucesso!";
+
+  document.getElementById("formNovaAula").reset();
+  document.getElementById("novaCapacidade").value = 8;
+
+  await carregarAulas();
+});
     
   </script>
 
