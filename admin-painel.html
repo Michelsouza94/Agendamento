@@ -205,6 +205,37 @@
 
     </div>
 
+    <!-- LISTA DE ESPERA -->
+
+<div class="card">
+  <h2>Lista de espera</h2>
+
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>WhatsApp</th>
+          <th>Data</th>
+          <th>Horário</th>
+          <th>Turma</th>
+          <th>Entrada</th>
+        </tr>
+      </thead>
+
+      <tbody id="listaEsperaTabela">
+      </tbody>
+    </table>
+  </div>
+
+  <p
+    id="semListaEspera"
+    class="sem-reservas"
+    style="display: none;"
+  >
+    Nenhuma pessoa na lista de espera.
+  </p>
+</div>
 
     <!-- AULAS -->
 
@@ -528,6 +559,8 @@
 
       await carregarReservas();
 
+      await carregarListaEspera();
+
       await carregarAulas();
 
     }
@@ -733,6 +766,154 @@
 
     }
 
+    // ==========================================
+// CARREGAR LISTA DE ESPERA
+// ==========================================
+
+async function carregarListaEspera() {
+  const {
+    data: listaEspera,
+    error: listaError
+  } = await supabaseClient
+    .from("lista_espera")
+    .select(
+      "id, aula_id, nome, whatsapp, created_at"
+    )
+    .order(
+      "created_at",
+      {
+        ascending: true
+      }
+    );
+
+  const tabela =
+    document.getElementById(
+      "listaEsperaTabela"
+    );
+
+  const semListaEspera =
+    document.getElementById(
+      "semListaEspera"
+    );
+
+  tabela.innerHTML = "";
+
+  if (listaError) {
+    console.error(
+      "Erro ao carregar lista de espera:",
+      listaError
+    );
+
+    semListaEspera.textContent =
+      "Não foi possível carregar a lista de espera.";
+
+    semListaEspera.style.display =
+      "block";
+
+    return;
+  }
+
+  if (
+    !listaEspera ||
+    listaEspera.length === 0
+  ) {
+    semListaEspera.style.display =
+      "block";
+
+    return;
+  }
+
+  const aulaIds = [
+    ...new Set(
+      listaEspera.map(
+        pessoa => pessoa.aula_id
+      )
+    )
+  ];
+
+  const {
+    data: aulas,
+    error: aulasError
+  } = await supabaseClient
+    .from("aulas")
+    .select(
+      "id, data, horario_inicio, horario_fim, turma"
+    )
+    .in(
+      "id",
+      aulaIds
+    );
+
+  if (aulasError) {
+    console.error(
+      "Erro ao carregar aulas da lista de espera:",
+      aulasError
+    );
+
+    semListaEspera.textContent =
+      "Não foi possível carregar os dados das aulas.";
+
+    semListaEspera.style.display =
+      "block";
+
+    return;
+  }
+
+  const aulasPorId = {};
+
+  (aulas || []).forEach(aula => {
+    aulasPorId[aula.id] = aula;
+  });
+
+  listaEspera.forEach(pessoa => {
+    const aula =
+      aulasPorId[pessoa.aula_id];
+
+    const linha =
+      document.createElement("tr");
+
+    const dataFormatada =
+      aula
+        ? aula.data
+            .split("-")
+            .reverse()
+            .join("/")
+        : "-";
+
+    const horario =
+      aula
+        ? `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`
+        : "-";
+
+    const turma =
+      aula
+        ? aula.turma
+        : "-";
+
+    const entrada =
+      new Date(
+        pessoa.created_at
+      ).toLocaleString(
+        "pt-BR"
+      );
+
+    linha.innerHTML = `
+      <td>${pessoa.nome}</td>
+      <td>${pessoa.whatsapp}</td>
+      <td>${dataFormatada}</td>
+      <td>${horario}</td>
+      <td>${turma}</td>
+      <td>${entrada}</td>
+    `;
+
+    tabela.appendChild(
+      linha
+    );
+  });
+
+  semListaEspera.style.display =
+    "none";
+}
 
     // ==========================================
     // CARREGAR AULAS
