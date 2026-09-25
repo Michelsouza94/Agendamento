@@ -318,7 +318,65 @@
     });
 
     verificarAcesso();
-carregarAulas();
+    carregarAulas();
+
+    async function carregarAulas() {
+  const { data: aulas, error } = await supabaseClient
+    .from("aulas")
+    .select("id, data, horario_inicio, horario_fim, turma, capacidade, ativo")
+    .order("data", { ascending: true })
+    .order("horario_inicio", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao carregar aulas:", error);
+    return;
+  }
+
+  const tabela = document.getElementById("aulasTabela");
+
+  if (!tabela) {
+    console.error("Elemento aulasTabela não encontrado.");
+    return;
+  }
+
+  tabela.innerHTML = "";
+
+  if (!aulas || aulas.length === 0) {
+    const linha = document.createElement("tr");
+
+    linha.innerHTML = `
+      <td colspan="5">Nenhuma aula encontrada.</td>
+    `;
+
+    tabela.appendChild(linha);
+    return;
+  }
+
+  aulas.forEach(aula => {
+    const linha = document.createElement("tr");
+
+    const dataFormatada = aula.data
+      .split("-")
+      .reverse()
+      .join("/");
+
+    const horario =
+      `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`;
+
+    const status = aula.ativo ? "Ativa" : "Inativa";
+
+    linha.innerHTML = `
+      <td>${dataFormatada}</td>
+      <td>${horario}</td>
+      <td>${aula.turma}</td>
+      <td>${aula.capacidade}</td>
+      <td>${status}</td>
+    `;
+
+    tabela.appendChild(linha);
+  });
+}
+    
   </script>
 
 </body>
