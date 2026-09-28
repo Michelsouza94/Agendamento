@@ -49,6 +49,22 @@ async function carregarDados() {
     return;
   }
 
+  const { data: listaEsperaData, error: listaEsperaError } =
+  await supabase.rpc("contar_lista_espera_por_aula");
+
+if (listaEsperaError) {
+  console.error(
+    "Erro ao carregar lista de espera:",
+    listaEsperaError
+  );
+}
+
+listaEsperaPorAula = {};
+
+(listaEsperaData || []).forEach(item => {
+  listaEsperaPorAula[item.aula_id] = Number(item.quantidade);
+});
+
   aulas = aulasData || [];
 
 reservasPorAula = {};
@@ -159,6 +175,10 @@ function contarReservas(aulaId) {
   return reservasPorAula[aulaId] || 0;
 }
 
+function contarListaEspera(aulaId) {
+  return listaEsperaPorAula[aulaId] || 0;
+}
+
 function renderizarHorarios() {
   const lista = document.querySelector(".time-list");
   const disponibilidade = document.querySelector(".availability");
@@ -213,6 +233,11 @@ function renderizarHorarios() {
         0
       );
 
+      const totalNaLista = grupo.aulas.reduce(
+  (total, aula) => total + contarListaEspera(aula.id),
+  0
+);
+
       const percentual =
         totalCapacidade > 0
           ? Math.min(
@@ -241,15 +266,19 @@ function renderizarHorarios() {
           </div>
 
           <div class="capacity">
-            <div>
-              <strong>${totalReservado}</strong>
-              <span>/ ${totalCapacidade} vagas</span>
-            </div>
+  <div>
+    <strong>${totalReservado}</strong>
+    <span>/ ${totalCapacidade} vagas</span>
+  </div>
 
-            <div class="progress">
-              <span style="width:${percentual}%"></span>
-            </div>
-          </div>
+  <small>
+    ${totalNaLista} ${totalNaLista === 1 ? "pessoa" : "pessoas"} na lista de espera
+  </small>
+
+  <div class="progress">
+    <span style="width:${percentual}%"></span>
+  </div>
+</div>
 
           <button
             class="details-btn"
@@ -302,12 +331,12 @@ function abrirTurmas(inicio, fim) {
           <span>
             <strong>${aula.turma}</strong>
             <small>
-              ${
-                vagasRestantes > 0
-                  ? `${vagasRestantes} vagas disponíveis`
-                  : "Turma lotada"
-              }
-            </small>
+  ${
+    vagasRestantes > 0
+      ? `${vagasRestantes} vagas disponíveis`
+      : `Turma lotada • ${contarListaEspera(aula.id)} na lista de espera`
+  }
+</small>
           </span>
           <b>→</b>
         </button>
