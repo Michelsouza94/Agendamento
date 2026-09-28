@@ -272,9 +272,11 @@ function renderizarHorarios() {
     <span>/ ${totalCapacidade} vagas</span>
   </div>
 
+  ${totalNaLista > 0 ? `
   <small>
     ${totalNaLista} ${totalNaLista === 1 ? "pessoa" : "pessoas"} na lista de espera
   </small>
+` : ""}
 
   <div class="progress">
     <span style="width:${percentual}%"></span>
