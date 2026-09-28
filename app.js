@@ -79,7 +79,7 @@ reservasPorAula = {};
     return;
   }
 
-  dataSelecionada = aulas[0].data;
+  dataSelecionada = aulas.find(aula => aula.data >= new Date().toISOString().split("T")[0])?.data || aulas[0].data;
 
   renderizarDatas();
   renderizarHorarios();
