@@ -529,6 +529,17 @@ document.getElementById("receiptSearch").addEventListener("click", async () => {
     }
   );
 
+    if (posicaoError) {
+      console.error(
+        "Erro ao consultar posição na fila:",
+        posicaoError
+      );
+    } else if (posicaoData && posicaoData.length > 0) {
+      posicaoFila = posicaoData[0];
+    }
+  }
+}
+
   if (listaEsperaError) {
     console.error(
       "Erro ao consultar lista de espera:",
