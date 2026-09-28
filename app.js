@@ -18,6 +18,7 @@ const message = document.getElementById("formMessage");
 
 let aulas = [];
 let reservasPorAula = {};
+let listaEsperaPorAula = {};
 let aulaSelecionada = null;
 let dataSelecionada = null;
 let modoListaEspera = false;
