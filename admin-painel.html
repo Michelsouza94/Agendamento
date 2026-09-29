@@ -2116,163 +2116,303 @@
     // CARREGAR AULAS
     // ======================================================
 
-    async function carregarAulas() {
+    // ======================================================
+// CARREGAR AULAS
+// ======================================================
 
-      const {
-        data: aulas,
-        error
-      } = await supabaseClient
-        .from("aulas")
-        .select(
-          "id, data, horario_inicio, horario_fim, turma, capacidade, ativo"
-        )
-        .order("data", {
-          ascending: true
-        })
-        .order("horario_inicio", {
-          ascending: true
-        });
+async function carregarAulas() {
+
+  const {
+    data: aulas,
+    error
+  } = await supabaseClient
+    .from("aulas")
+    .select(
+      "id, data, horario_inicio, horario_fim, turma, capacidade, ativo"
+    )
+    .order("data", {
+      ascending: true
+    })
+    .order("horario_inicio", {
+      ascending: true
+    });
 
 
-      if (error) {
+  if (error) {
 
-        console.error(
-          "Erro ao carregar aulas:",
-          error
-        );
+    console.error(
+      "Erro ao carregar aulas:",
+      error
+    );
 
-        return;
+    return;
+  }
+
+
+  todasAulas = aulas || [];
+
+
+  const tabela =
+    document.getElementById(
+      "aulasTabela"
+    );
+
+
+  const semAulas =
+    document.getElementById(
+      "semAulas"
+    );
+
+
+  tabela.innerHTML = "";
+
+
+  if (
+    !aulas ||
+    aulas.length === 0
+  ) {
+
+    semAulas.style.display =
+      "block";
+
+    return;
+  }
+
+
+  aulas.forEach(aula => {
+
+    const linha =
+      document.createElement("tr");
+
+
+    const dataFormatada =
+      formatarData(aula.data);
+
+
+    const horario =
+      formatarHorario(
+        aula.horario_inicio,
+        aula.horario_fim
+      );
+
+
+    const status =
+      aula.ativo
+        ? "Ativa"
+        : "Inativa";
+
+
+    const acao = `
+
+      <button
+        class="btn-editar"
+        onclick="editarAula('${aula.id}')"
+      >
+        Editar
+      </button>
+
+      ${
+        aula.ativo
+
+          ? `
+            <button
+              class="btn-excluir"
+              onclick="alterarStatusAula('${aula.id}', false)"
+            >
+              Desativar
+            </button>
+          `
+
+          : `
+            <button
+              class="btn-reservar"
+              onclick="alterarStatusAula('${aula.id}', true)"
+            >
+              Ativar
+            </button>
+          `
       }
 
+      <button
+        class="btn-excluir"
+        onclick="excluirAula('${aula.id}')"
+      >
+        Excluir
+      </button>
 
-      todasAulas = aulas || [];
-
-
-      const tabela =
-        document.getElementById(
-          "aulasTabela"
-        );
-
-
-      const semAulas =
-        document.getElementById(
-          "semAulas"
-        );
+    `;
 
 
-      tabela.innerHTML = "";
+    linha.innerHTML = `
+
+      <td>
+        ${dataFormatada}
+      </td>
+
+      <td>
+        ${horario}
+      </td>
+
+      <td>
+        ${escaparHtml(aula.turma)}
+      </td>
+
+      <td>
+        ${aula.capacidade}
+      </td>
+
+      <td>
+        ${status}
+      </td>
+
+      <td>
+        ${acao}
+      </td>
+
+    `;
 
 
-      if (
-        !aulas ||
-        aulas.length === 0
-      ) {
+    tabela.appendChild(
+      linha
+    );
 
-        semAulas.style.display =
-          "block";
+  });
 
-        return;
+
+  semAulas.style.display =
+    "none";
+
+}
+
+    // ======================================================
+// EXCLUIR AULA
+// ======================================================
+
+async function excluirAula(id) {
+
+  const confirmar =
+    confirm(
+      "Tem certeza que deseja excluir esta aula?"
+    );
+
+
+  if (!confirmar) {
+    return;
+  }
+
+
+  // Verificar se existem reservas
+  const {
+    count: quantidadeReservas,
+    error: reservasError
+  } = await supabaseClient
+    .from("reservas")
+    .select(
+      "id",
+      {
+        count: "exact",
+        head: true
       }
+    )
+    .eq("aula_id", id);
 
 
-      aulas.forEach(aula => {
+  if (reservasError) {
 
-        const linha =
-          document.createElement("tr");
+    console.error(
+      "Erro ao verificar reservas:",
+      reservasError
+    );
 
+    alert(
+      "Não foi possível verificar as reservas desta aula."
+    );
 
-        const dataFormatada =
-          formatarData(aula.data);
-
-
-        const horario =
-          formatarHorario(
-            aula.horario_inicio,
-            aula.horario_fim
-          );
+    return;
+  }
 
 
-        const status =
-          aula.ativo
-            ? "Ativa"
-            : "Inativa";
+  // Verificar se existem pessoas na lista de espera
+  const {
+    count: quantidadeLista,
+    error: listaError
+  } = await supabaseClient
+    .from("lista_espera")
+    .select(
+      "id",
+      {
+        count: "exact",
+        head: true
+      }
+    )
+    .eq("aula_id", id);
 
 
-        const acao = `
+  if (listaError) {
 
-          <button
-            class="btn-editar"
-            onclick="editarAula('${aula.id}')"
-          >
-            Editar
-          </button>
+    console.error(
+      "Erro ao verificar lista de espera:",
+      listaError
+    );
 
-          ${
-            aula.ativo
+    alert(
+      "Não foi possível verificar a lista de espera desta aula."
+    );
 
-              ? `
-                <button
-                  class="btn-excluir"
-                  onclick="alterarStatusAula('${aula.id}', false)"
-                >
-                  Desativar
-                </button>
-              `
-
-              : `
-                <button
-                  class="btn-reservar"
-                  onclick="alterarStatusAula('${aula.id}', true)"
-                >
-                  Ativar
-                </button>
-              `
-          }
-
-        `;
+    return;
+  }
 
 
-        linha.innerHTML = `
+  // Não permitir exclusão se houver pessoas vinculadas
+  if (
+    quantidadeReservas > 0 ||
+    quantidadeLista > 0
+  ) {
 
-          <td>
-            ${dataFormatada}
-          </td>
+    alert(
+      "Esta aula não pode ser excluída porque possui reservas ou pessoas na lista de espera."
+    );
 
-          <td>
-            ${horario}
-          </td>
-
-          <td>
-            ${escaparHtml(aula.turma)}
-          </td>
-
-          <td>
-            ${aula.capacidade}
-          </td>
-
-          <td>
-            ${status}
-          </td>
-
-          <td>
-            ${acao}
-          </td>
-
-        `;
+    return;
+  }
 
 
-        tabela.appendChild(
-          linha
-        );
+  // ======================================================
+// EXCLUIR AULA
+// ======================================================
+  const {
+    error
+  } = await supabaseClient
+    .from("aulas")
+    .delete()
+    .eq("id", id);
 
-      });
+
+  if (error) {
+
+    console.error(
+      "Erro ao excluir aula:",
+      error
+    );
+
+    alert(
+      "Não foi possível excluir a aula."
+    );
+
+    return;
+  }
 
 
-      semAulas.style.display =
-        "none";
+  alert(
+    "Aula excluída com sucesso."
+  );
 
-    }
 
+  await carregarAulasBase();
+
+  await carregarAulas();
+
+}
 
     // ======================================================
     // ATIVAR / DESATIVAR AULA
