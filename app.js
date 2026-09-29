@@ -559,9 +559,7 @@ document.getElementById("receiptSearch").addEventListener("click", async () => {
   `;
 
   return;
-}
-
-
+});
 
 // --------------------------------------------------
 // ERRO
