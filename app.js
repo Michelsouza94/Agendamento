@@ -23,74 +23,157 @@ let aulaSelecionada = null;
 let dataSelecionada = null;
 let modoListaEspera = false;
 
+
+// --------------------------------------------------
+// DATA DE HOJE
+// --------------------------------------------------
+
+function obterDataHoje() {
+
+  const hoje = new Date();
+
+  const ano = hoje.getFullYear();
+
+  const mes = String(
+    hoje.getMonth() + 1
+  ).padStart(2, "0");
+
+  const dia = String(
+    hoje.getDate()
+  ).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+
 // --------------------------------------------------
 // CARREGAR DADOS
 // --------------------------------------------------
 
 async function carregarDados() {
-  const { data: aulasData, error: aulasError } = await supabase
+
+  const hoje = obterDataHoje();
+
+  const {
+    data: aulasData,
+    error: aulasError
+  } = await supabase
     .from("aulas")
     .select("*")
     .eq("ativo", true)
+    .gte("data", hoje)
     .order("data")
     .order("horario_inicio");
 
+
   if (aulasError) {
-    console.error("Erro ao carregar aulas:", aulasError);
-    mostrarErro("Não foi possível carregar os horários.");
+
+    console.error(
+      "Erro ao carregar aulas:",
+      aulasError
+    );
+
+    mostrarErro(
+      "Não foi possível carregar os horários."
+    );
+
     return;
   }
 
-  const { data: reservasData, error: reservasError } =
-  await supabase.rpc("contar_reservas_por_aula");
+
+  const {
+    data: reservasData,
+    error: reservasError
+  } = await supabase.rpc(
+    "contar_reservas_por_aula"
+  );
+
 
   if (reservasError) {
-    console.error("Erro ao carregar reservas:", reservasError);
-    mostrarErro("Não foi possível carregar as reservas.");
+
+    console.error(
+      "Erro ao carregar reservas:",
+      reservasError
+    );
+
+    mostrarErro(
+      "Não foi possível carregar as reservas."
+    );
+
     return;
   }
 
-  const { data: listaEsperaData, error: listaEsperaError } =
-  await supabase.rpc("contar_lista_espera_por_aula");
 
-if (listaEsperaError) {
-  console.error(
-    "Erro ao carregar lista de espera:",
-    listaEsperaError
+  const {
+    data: listaEsperaData,
+    error: listaEsperaError
+  } = await supabase.rpc(
+    "contar_lista_espera_por_aula"
   );
-}
 
-listaEsperaPorAula = {};
 
-(listaEsperaData || []).forEach(item => {
-  listaEsperaPorAula[item.aula_id] = Number(item.quantidade);
-});
+  if (listaEsperaError) {
+
+    console.error(
+      "Erro ao carregar lista de espera:",
+      listaEsperaError
+    );
+
+  }
+
+
+  listaEsperaPorAula = {};
+
+
+  (listaEsperaData || []).forEach(item => {
+
+    listaEsperaPorAula[item.aula_id] =
+      Number(item.quantidade);
+
+  });
+
 
   aulas = aulasData || [];
 
-reservasPorAula = {};
 
-(reservasData || []).forEach(item => {
-  reservasPorAula[item.aula_id] = Number(item.quantidade);
-});
+  reservasPorAula = {};
+
+
+  (reservasData || []).forEach(item => {
+
+    reservasPorAula[item.aula_id] =
+      Number(item.quantidade);
+
+  });
+
 
   if (!aulas.length) {
-    mostrarErro("Nenhuma aula disponível no momento.");
+
+    mostrarErro(
+      "Nenhuma aula disponível no momento."
+    );
+
     return;
   }
 
+
   dataSelecionada = null;
 
+
   renderizarDatas();
+
   renderizarHorarios();
 }
+
 
 // --------------------------------------------------
 // DATAS
 // --------------------------------------------------
 
 function formatarData(data) {
+
   const partes = data.split("-");
+
   return new Date(
     Number(partes[0]),
     Number(partes[1]) - 1,
@@ -98,488 +181,1147 @@ function formatarData(data) {
   );
 }
 
+
 function diaSemana(data) {
+
   return formatarData(data)
-    .toLocaleDateString("pt-BR", { weekday: "short" })
+    .toLocaleDateString(
+      "pt-BR",
+      {
+        weekday: "short"
+      }
+    )
     .replace(".", "")
     .toUpperCase();
 }
+
 
 function diaNumero(data) {
-  return formatarData(data).getDate();
+
+  return formatarData(data)
+    .getDate();
 }
 
+
 function mesAbreviado(data) {
+
   return formatarData(data)
-    .toLocaleDateString("pt-BR", { month: "short" })
+    .toLocaleDateString(
+      "pt-BR",
+      {
+        month: "short"
+      }
+    )
     .replace(".", "")
     .toUpperCase();
 }
 
+
 function renderizarDatas() {
-  const container = document.querySelector(".date-tabs");
 
-  const datas = [...new Set(aulas.map(aula => aula.data))];
+  const container =
+    document.querySelector(
+      ".date-tabs"
+    );
 
-  container.innerHTML = datas
-    .map(
-      data => `
-        <button
-          class="date-tab ${data === dataSelecionada ? "active" : ""}"
-          data-date="${data}"
-        >
-          <span>${diaSemana(data)}</span>
-          <strong>${diaNumero(data)}</strong>
-          <small>${mesAbreviado(data)}</small>
-        </button>
-      `
+
+  const datas = [
+    ...new Set(
+      aulas.map(
+        aula => aula.data
+      )
     )
-    .join("");
+  ];
 
-  container.querySelectorAll(".date-tab").forEach(botao => {
-    botao.addEventListener("click", () => {
-      dataSelecionada = botao.dataset.date;
 
-      container.querySelectorAll(".date-tab").forEach(item => {
-        item.classList.remove("active");
-      });
+  container.innerHTML =
+    datas
+      .map(
+        data => `
+          <button
+            class="date-tab ${
+              data === dataSelecionada
+                ? "active"
+                : ""
+            }"
+            data-date="${data}"
+          >
+            <span>${diaSemana(data)}</span>
+            <strong>${diaNumero(data)}</strong>
+            <small>${mesAbreviado(data)}</small>
+          </button>
+        `
+      )
+      .join("");
 
-      botao.classList.add("active");
 
-      renderizarHorarios();
+  container
+    .querySelectorAll(
+      ".date-tab"
+    )
+    .forEach(botao => {
+
+      botao.addEventListener(
+        "click",
+        () => {
+
+          dataSelecionada =
+            botao.dataset.date;
+
+
+          container
+            .querySelectorAll(
+              ".date-tab"
+            )
+            .forEach(item => {
+
+              item.classList.remove(
+                "active"
+              );
+
+            });
+
+
+          botao.classList.add(
+            "active"
+          );
+
+
+          renderizarHorarios();
+
+        }
+      );
+
     });
-  });
 
-  const primeiraData = datas[0];
 
-  const dateCard = document.querySelector(".date-card");
+  const primeiraData =
+    datas[0];
 
-  if (dateCard && primeiraData) {
+
+  const dateCard =
+    document.querySelector(
+      ".date-card"
+    );
+
+
+  if (
+    dateCard &&
+    primeiraData
+  ) {
+
     dateCard.innerHTML = `
       <span>Próximo dia</span>
       <strong>${diaSemana(primeiraData)}</strong>
       <b>${diaNumero(primeiraData)}</b>
       <small>${mesAbreviado(primeiraData)}</small>
     `;
+
   }
+
 }
+
 
 // --------------------------------------------------
 // HORÁRIOS
 // --------------------------------------------------
 
 function horarioTexto(hora) {
-  return hora.substring(0, 5);
+
+  return hora.substring(
+    0,
+    5
+  );
+
 }
+
 
 function contarReservas(aulaId) {
+
   return reservasPorAula[aulaId] || 0;
+
 }
+
 
 function contarListaEspera(aulaId) {
+
   return listaEsperaPorAula[aulaId] || 0;
+
 }
 
-function renderizarHorarios() {
-  const lista = document.querySelector(".time-list");
-  const disponibilidade = document.querySelector(".availability");
 
-  const aulasDoDia = aulas.filter(
-    aula => aula.data === dataSelecionada
-  );
+function renderizarHorarios() {
+
+  const lista =
+    document.querySelector(
+      ".time-list"
+    );
+
+
+  const disponibilidade =
+    document.querySelector(
+      ".availability"
+    );
+
+
+  const aulasDoDia =
+    aulas.filter(
+      aula =>
+        aula.data === dataSelecionada
+    );
+
 
   const grupos = {};
 
+
   aulasDoDia.forEach(aula => {
-    const chave = `${aula.horario_inicio}-${aula.horario_fim}`;
+
+    const chave =
+      `${aula.horario_inicio}-${aula.horario_fim}`;
+
 
     if (!grupos[chave]) {
+
       grupos[chave] = {
-        inicio: aula.horario_inicio,
-        fim: aula.horario_fim,
+
+        inicio:
+          aula.horario_inicio,
+
+        fim:
+          aula.horario_fim,
+
         aulas: []
+
       };
+
     }
 
-    grupos[chave].aulas.push(aula);
+
+    grupos[chave]
+      .aulas
+      .push(aula);
+
   });
 
-  const horarios = Object.values(grupos);
+
+  const horarios =
+    Object.values(grupos);
+
 
   disponibilidade.textContent =
-    `${horarios.length} ${horarios.length === 1 ? "horário" : "horários"}`;
+    `${horarios.length} ${
+      horarios.length === 1
+        ? "horário"
+        : "horários"
+    }`;
+
 
   if (!horarios.length) {
+
     lista.innerHTML = `
       <div class="info-strip">
         <div class="info-icon">!</div>
+
         <div>
-          <strong>Nenhum horário disponível</strong>
-          <span>Escolha outra data.</span>
+          <strong>
+            Nenhum horário disponível
+          </strong>
+
+          <span>
+            Escolha outra data.
+          </span>
         </div>
       </div>
     `;
+
     return;
   }
 
-  lista.innerHTML = horarios
-    .map(grupo => {
-      const totalCapacidade = grupo.aulas.reduce(
-        (total, aula) => total + Number(aula.capacidade || 0),
-        0
-      );
 
-      const totalReservado = grupo.aulas.reduce(
-        (total, aula) => total + contarReservas(aula.id),
-        0
-      );
+  lista.innerHTML =
+    horarios
+      .map(grupo => {
 
-      const totalNaLista = grupo.aulas.reduce(
-  (total, aula) => total + contarListaEspera(aula.id),
-  0
-);
+        const totalCapacidade =
+          grupo.aulas.reduce(
+            (
+              total,
+              aula
+            ) =>
+              total +
+              Number(
+                aula.capacidade || 0
+              ),
+            0
+          );
 
-      const percentual =
-        totalCapacidade > 0
-          ? Math.min(
-              100,
-              Math.round((totalReservado / totalCapacidade) * 100)
-            )
-          : 0;
 
-      const quantidadeTurmas = grupo.aulas.length;
+        const totalReservado =
+          grupo.aulas.reduce(
+            (
+              total,
+              aula
+            ) =>
+              total +
+              contarReservas(
+                aula.id
+              ),
+            0
+          );
 
-      return `
-        <article class="time-card">
-          <div class="time-main">
-            <div class="time-icon">${horarioTexto(grupo.inicio).substring(0, 2)}</div>
 
-            <div>
-              <strong>
-                ${horarioTexto(grupo.inicio)} — ${horarioTexto(grupo.fim)}
-              </strong>
+        const totalNaLista =
+          grupo.aulas.reduce(
+            (
+              total,
+              aula
+            ) =>
+              total +
+              contarListaEspera(
+                aula.id
+              ),
+            0
+          );
 
-              <span>
-                ${quantidadeTurmas}
-                ${quantidadeTurmas === 1 ? "turma disponível" : "turmas disponíveis"}
-              </span>
+
+        const percentual =
+          totalCapacidade > 0
+            ? Math.min(
+                100,
+                Math.round(
+                  (
+                    totalReservado /
+                    totalCapacidade
+                  ) * 100
+                )
+              )
+            : 0;
+
+
+        const quantidadeTurmas =
+          grupo.aulas.length;
+
+
+        return `
+          <article class="time-card">
+
+            <div class="time-main">
+
+              <div class="time-icon">
+                ${horarioTexto(
+                  grupo.inicio
+                ).substring(0, 2)}
+              </div>
+
+              <div>
+
+                <strong>
+                  ${horarioTexto(
+                    grupo.inicio
+                  )}
+                  —
+                  ${horarioTexto(
+                    grupo.fim
+                  )}
+                </strong>
+
+                <span>
+                  ${quantidadeTurmas}
+                  ${
+                    quantidadeTurmas === 1
+                      ? "turma disponível"
+                      : "turmas disponíveis"
+                  }
+                </span>
+
+              </div>
+
             </div>
-          </div>
 
-          <div class="capacity">
-  <div>
-    <strong>${totalReservado}</strong>
-    <span>/ ${totalCapacidade} vagas</span>
-  </div>
 
-  ${totalNaLista > 0 ? `
-  <small>
-    ${totalNaLista} ${totalNaLista === 1 ? "pessoa" : "pessoas"} na lista de espera
-  </small>
-` : ""}
+            <div class="capacity">
 
-  <div class="progress">
-    <span style="width:${percentual}%"></span>
-  </div>
-</div>
+              <div>
 
-          <button
-            class="details-btn"
-            data-inicio="${grupo.inicio}"
-            data-fim="${grupo.fim}"
-          >
-            Ver turmas
-          </button>
-        </article>
-      `;
-    })
-    .join("");
+                <strong>
+                  ${totalReservado}
+                </strong>
 
-  lista.querySelectorAll(".details-btn").forEach(botao => {
-    botao.addEventListener("click", () => {
-      abrirTurmas(botao.dataset.inicio, botao.dataset.fim);
+                <span>
+                  / ${totalCapacidade} vagas
+                </span>
+
+              </div>
+
+
+              ${
+                totalNaLista > 0
+                  ? `
+                    <small>
+                      ${totalNaLista}
+                      ${
+                        totalNaLista === 1
+                          ? "pessoa"
+                          : "pessoas"
+                      }
+                      na lista de espera
+                    </small>
+                  `
+                  : ""
+              }
+
+
+              <div class="progress">
+
+                <span
+                  style="width:${percentual}%"
+                ></span>
+
+              </div>
+
+            </div>
+
+
+            <button
+              class="details-btn"
+              data-inicio="${grupo.inicio}"
+              data-fim="${grupo.fim}"
+            >
+              Ver turmas
+            </button>
+
+          </article>
+        `;
+
+      })
+      .join("");
+
+
+  lista
+    .querySelectorAll(
+      ".details-btn"
+    )
+    .forEach(botao => {
+
+      botao.addEventListener(
+        "click",
+        () => {
+
+          abrirTurmas(
+            botao.dataset.inicio,
+            botao.dataset.fim
+          );
+
+        }
+      );
+
     });
-  });
+
 }
+
 
 // --------------------------------------------------
 // TURMAS
 // --------------------------------------------------
 
-function abrirTurmas(inicio, fim) {
-  const aulasDoHorario = aulas.filter(
-    aula =>
-      aula.data === dataSelecionada &&
-      aula.horario_inicio === inicio &&
-      aula.horario_fim === fim
-  );
+function abrirTurmas(
+  inicio,
+  fim
+) {
+
+  const aulasDoHorario =
+    aulas.filter(
+      aula =>
+        aula.data ===
+          dataSelecionada &&
+        aula.horario_inicio ===
+          inicio &&
+        aula.horario_fim ===
+          fim
+    );
+
 
   modalSubtitle.textContent =
-    `${formatarData(dataSelecionada).toLocaleDateString("pt-BR")} • ` +
-    `${horarioTexto(inicio)} — ${horarioTexto(fim)}`;
+    `${formatarData(
+      dataSelecionada
+    ).toLocaleDateString(
+      "pt-BR"
+    )} • ` +
+    `${horarioTexto(
+      inicio
+    )} — ${horarioTexto(
+      fim
+    )}`;
 
-  const opcoes = document.querySelector(".class-options");
 
-  opcoes.innerHTML = aulasDoHorario
-    .map(aula => {
-      const reservasAula = contarReservas(aula.id);
-      const vagasRestantes = Number(aula.capacidade) - reservasAula;
+  const opcoes =
+    document.querySelector(
+      ".class-options"
+    );
 
-      return `
-        <button
-          class="class-option"
-          data-aula-id="${aula.id}"
-         ${vagasRestantes <= 0 ? 'data-lista-espera="true"' : ""}
-        >
-          <span>
-            <strong>${aula.turma}</strong>
-            <small>
-  ${
-    vagasRestantes > 0
-      ? `${vagasRestantes} vagas disponíveis`
-      : `Turma lotada • ${contarListaEspera(aula.id)} na lista de espera`
-  }
-</small>
-          </span>
-          <b>→</b>
-        </button>
-      `;
-    })
-    .join("");
 
-  form.classList.add("hidden");
-  message.textContent = "";
+  opcoes.innerHTML =
+    aulasDoHorario
+      .map(aula => {
 
-  opcoes.querySelectorAll(".class-option").forEach(botao => {
-    botao.addEventListener("click", () => {
-  aulaSelecionada = aulas.find(
-    aula => aula.id === botao.dataset.aulaId
+        const reservasAula =
+          contarReservas(
+            aula.id
+          );
+
+
+        const vagasRestantes =
+          Number(
+            aula.capacidade
+          ) -
+          reservasAula;
+
+
+        return `
+          <button
+            class="class-option"
+            data-aula-id="${aula.id}"
+            ${
+              vagasRestantes <= 0
+                ? 'data-lista-espera="true"'
+                : ""
+            }
+          >
+
+            <span>
+
+              <strong>
+                ${aula.turma}
+              </strong>
+
+              <small>
+                ${
+                  vagasRestantes > 0
+                    ? `${vagasRestantes} vagas disponíveis`
+                    : `Turma lotada • ${contarListaEspera(
+                        aula.id
+                      )} na lista de espera`
+                }
+              </small>
+
+            </span>
+
+            <b>→</b>
+
+          </button>
+        `;
+
+      })
+      .join("");
+
+
+  form.classList.add(
+    "hidden"
   );
 
-  if (!aulaSelecionada) return;
+  message.textContent =
+    "";
 
-  modoListaEspera = botao.dataset.listaEspera === "true";
-      const botaoReserva = document.getElementById("reserveBtn");
 
-botaoReserva.textContent = modoListaEspera
-  ? "Entrar na lista de espera"
-  : "Confirmar reserva";
+  opcoes
+    .querySelectorAll(
+      ".class-option"
+    )
+    .forEach(botao => {
 
-  form.classList.remove("hidden");
-  message.textContent = "";
-});
-  });
+      botao.addEventListener(
+        "click",
+        () => {
 
-  backdrop.classList.add("open");
+          aulaSelecionada =
+            aulas.find(
+              aula =>
+                aula.id ===
+                botao.dataset.aulaId
+            );
+
+
+          if (!aulaSelecionada) {
+            return;
+          }
+
+
+          modoListaEspera =
+            botao.dataset.listaEspera ===
+            "true";
+
+
+          const botaoReserva =
+            document.getElementById(
+              "reserveBtn"
+            );
+
+
+          botaoReserva.textContent =
+            modoListaEspera
+              ? "Entrar na lista de espera"
+              : "Confirmar reserva";
+
+
+          form.classList.remove(
+            "hidden"
+          );
+
+
+          message.textContent =
+            "";
+
+        }
+      );
+
+    });
+
+
+  backdrop.classList.add(
+    "open"
+  );
+
 }
+
 
 // --------------------------------------------------
 // RESERVAR
 // --------------------------------------------------
 
-document.getElementById("reserveBtn").addEventListener("click", async () => {
-  const nome = document.getElementById("nameInput").value.trim();
-  const whatsapp = document.getElementById("phoneInput").value.trim();
+document
+  .getElementById(
+    "reserveBtn"
+  )
+  .addEventListener(
+    "click",
+    async () => {
 
-  if (!aulaSelecionada) {
-    message.textContent = "Escolha uma turma.";
-    return;
-  }
+      const nome =
+        document
+          .getElementById(
+            "nameInput"
+          )
+          .value
+          .trim();
 
-  if (!nome || !whatsapp) {
-    message.textContent = "Preencha seu nome e WhatsApp.";
-    return;
-  }
 
-  const reservasAtuais = contarReservas(aulaSelecionada.id);
+      const whatsapp =
+        document
+          .getElementById(
+            "phoneInput"
+          )
+          .value
+          .trim();
 
-if (
-  !modoListaEspera &&
-  reservasAtuais >= Number(aulaSelecionada.capacidade)
-) {
-  message.textContent = "Essa turma acabou de ficar lotada.";
-  return;
-}
 
-  const botao = document.getElementById("reserveBtn");
+      if (!aulaSelecionada) {
 
-  botao.disabled = true;
-  botao.textContent = "Confirmando...";
+        message.textContent =
+          "Escolha uma turma.";
 
-  let data;
-let error;
+        return;
+      }
 
-if (modoListaEspera) {
-  const resposta = await supabase.rpc("entrar_lista_espera", {
-    p_aula_id: aulaSelecionada.id,
-    p_nome: nome,
-    p_whatsapp: whatsapp
-  });
 
-  data = resposta.data;
-  error = resposta.error;
-} else {
-  const resposta = await supabase.rpc("reservar_aula", {
-    p_aula_id: aulaSelecionada.id,
-    p_nome: nome,
-    p_whatsapp: whatsapp
-  });
+      if (
+        !nome ||
+        !whatsapp
+      ) {
 
-  data = resposta.data;
-  error = resposta.error;
-}
+        message.textContent =
+          "Preencha seu nome e WhatsApp.";
 
-  botao.disabled = false;
-  botao.textContent = "Confirmar reserva";
+        return;
+      }
 
-  if (error) {
-  console.error("Erro:", error);
-  message.textContent =
-    "Não foi possível concluir. Tente novamente.";
-  return;
-}
 
-const resultado = data?.[0];
+      const reservasAtuais =
+        contarReservas(
+          aulaSelecionada.id
+        );
 
-if (!resultado?.sucesso) {
-  message.textContent =
-    resultado?.mensagem || "Não foi possível concluir.";
-  return;
-}
 
- if (modoListaEspera) {
-  message.textContent = "Você entrou na lista de espera.";
-} else {
-  reservasPorAula[aulaSelecionada.id] =
-    (reservasPorAula[aulaSelecionada.id] || 0) + 1;
+      if (
+        !modoListaEspera &&
+        reservasAtuais >=
+          Number(
+            aulaSelecionada.capacidade
+          )
+      ) {
 
-  message.textContent =
-    "Reserva confirmada! Seu horário foi reservado com sucesso.";
-}
+        message.textContent =
+          "Essa turma acabou de ficar lotada.";
 
-  document.getElementById("nameInput").value = "";
-  document.getElementById("phoneInput").value = "";
+        return;
+      }
 
-  renderizarHorarios();
-});
+
+      const botao =
+        document.getElementById(
+          "reserveBtn"
+        );
+
+
+      botao.disabled =
+        true;
+
+
+      botao.textContent =
+        "Confirmando...";
+
+
+      let data;
+
+      let error;
+
+
+      if (
+        modoListaEspera
+      ) {
+
+        const resposta =
+          await supabase.rpc(
+            "entrar_lista_espera",
+            {
+              p_aula_id:
+                aulaSelecionada.id,
+
+              p_nome:
+                nome,
+
+              p_whatsapp:
+                whatsapp
+            }
+          );
+
+
+        data =
+          resposta.data;
+
+        error =
+          resposta.error;
+
+      } else {
+
+        const resposta =
+          await supabase.rpc(
+            "reservar_aula",
+            {
+              p_aula_id:
+                aulaSelecionada.id,
+
+              p_nome:
+                nome,
+
+              p_whatsapp:
+                whatsapp
+            }
+          );
+
+
+        data =
+          resposta.data;
+
+        error =
+          resposta.error;
+
+      }
+
+
+      botao.disabled =
+        false;
+
+
+      botao.textContent =
+        modoListaEspera
+          ? "Entrar na lista de espera"
+          : "Confirmar reserva";
+
+
+      if (error) {
+
+        console.error(
+          "Erro:",
+          error
+        );
+
+        message.textContent =
+          "Não foi possível concluir. Tente novamente.";
+
+        return;
+      }
+
+
+      const resultado =
+        data?.[0];
+
+
+      if (
+        !resultado?.sucesso
+      ) {
+
+        message.textContent =
+          resultado?.mensagem ||
+          "Não foi possível concluir.";
+
+        return;
+      }
+
+
+      if (
+        modoListaEspera
+      ) {
+
+        listaEsperaPorAula[
+          aulaSelecionada.id
+        ] =
+          (
+            listaEsperaPorAula[
+              aulaSelecionada.id
+            ] || 0
+          ) + 1;
+
+
+        message.textContent =
+          "Você entrou na lista de espera.";
+
+      } else {
+
+        reservasPorAula[
+          aulaSelecionada.id
+        ] =
+          (
+            reservasPorAula[
+              aulaSelecionada.id
+            ] || 0
+          ) + 1;
+
+
+        message.textContent =
+          "Reserva confirmada! Seu horário foi reservado com sucesso.";
+
+      }
+
+
+      document
+        .getElementById(
+          "nameInput"
+        )
+        .value =
+        "";
+
+
+      document
+        .getElementById(
+          "phoneInput"
+        )
+        .value =
+        "";
+
+
+      renderizarHorarios();
+
+    }
+  );
+
 
 // --------------------------------------------------
 // FECHAR MODAIS
 // --------------------------------------------------
 
-document.getElementById("closeModal").addEventListener("click", () => {
-  backdrop.classList.remove("open");
-});
+document
+  .getElementById(
+    "closeModal"
+  )
+  .addEventListener(
+    "click",
+    () => {
 
-backdrop.addEventListener("click", event => {
-  if (event.target === backdrop) {
-    backdrop.classList.remove("open");
+      backdrop.classList.remove(
+        "open"
+      );
+
+    }
+  );
+
+
+backdrop.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target ===
+      backdrop
+    ) {
+
+      backdrop.classList.remove(
+        "open"
+      );
+
+    }
+
   }
-});
+);
 
-document.getElementById("receiptBtn").addEventListener("click", () => {
-  receiptModal.classList.add("open");
-});
 
-document.getElementById("closeReceipt").addEventListener("click", () => {
-  receiptModal.classList.remove("open");
-});
+document
+  .getElementById(
+    "receiptBtn"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      receiptModal.classList.add(
+        "open"
+      );
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "closeReceipt"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      receiptModal.classList.remove(
+        "open"
+      );
+
+    }
+  );
+
 
 // --------------------------------------------------
 // COMPROVANTE
 // --------------------------------------------------
 
-document.getElementById("receiptSearch").addEventListener("click", async () => {
-  const whatsapp = document
-    .getElementById("receiptInput")
-    .value
-    .trim();
+document
+  .getElementById(
+    "receiptSearch"
+  )
+  .addEventListener(
+    "click",
+    async () => {
 
-  const receiptMessage = document.getElementById("receiptMessage");
+      const whatsapp =
+        document
+          .getElementById(
+            "receiptInput"
+          )
+          .value
+          .trim();
 
-  if (!whatsapp) {
-    receiptMessage.textContent = "Digite seu WhatsApp.";
-    return;
-  }
 
-  receiptMessage.textContent = "Consultando...";
+      const receiptMessage =
+        document.getElementById(
+          "receiptMessage"
+        );
 
-  const { data, error } = await supabase.rpc(
-    "consultar_reserva_por_whatsapp",
-    {
-      p_whatsapp: whatsapp
+
+      if (!whatsapp) {
+
+        receiptMessage.textContent =
+          "Digite seu WhatsApp.";
+
+        return;
+      }
+
+
+      receiptMessage.textContent =
+        "Consultando...";
+
+
+      const {
+        data,
+        error
+      } =
+        await supabase.rpc(
+          "consultar_reserva_por_whatsapp",
+          {
+            p_whatsapp:
+              whatsapp
+          }
+        );
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao consultar reserva:",
+          error
+        );
+
+        receiptMessage.textContent =
+          "Não foi possível consultar agora.";
+
+        return;
+      }
+
+
+      // --------------------------------------------
+      // RESERVA ENCONTRADA
+      // --------------------------------------------
+
+      if (
+        data &&
+        data.length
+      ) {
+
+        const reserva =
+          data[0];
+
+
+        receiptMessage.innerHTML = `
+          <strong>
+            Reserva encontrada!
+          </strong>
+          <br>
+          ${reserva.nome}
+          <br>
+          ${reserva.turma}
+          <br>
+          ${formatarData(
+            reserva.data
+          ).toLocaleDateString(
+            "pt-BR"
+          )}
+          <br>
+          ${horarioTexto(
+            reserva.horario_inicio
+          )}
+          —
+          ${horarioTexto(
+            reserva.horario_fim
+          )}
+        `;
+
+
+        return;
+      }
+
+
+      // --------------------------------------------
+      // PROCURAR NA LISTA DE ESPERA
+      // --------------------------------------------
+
+      const {
+        data: listaEsperaData,
+        error: listaEsperaError
+      } =
+        await supabase.rpc(
+          "consultar_lista_espera_por_whatsapp",
+          {
+            p_whatsapp:
+              whatsapp
+          }
+        );
+
+
+      if (
+        listaEsperaError
+      ) {
+
+        console.error(
+          "Erro ao consultar lista de espera:",
+          listaEsperaError
+        );
+
+        receiptMessage.textContent =
+          "Não foi possível consultar agora.";
+
+        return;
+      }
+
+
+      if (
+        !listaEsperaData ||
+        !listaEsperaData.length
+      ) {
+
+        receiptMessage.textContent =
+          "Nenhuma reserva ou entrada na lista de espera encontrada para esse WhatsApp.";
+
+        return;
+      }
+
+
+      const espera =
+        listaEsperaData[0];
+
+
+      receiptMessage.innerHTML = `
+        <strong>
+          Entrada na lista de espera encontrada!
+        </strong>
+        <br>
+        ${espera.nome}
+        <br>
+        ${espera.turma}
+        <br>
+        ${formatarData(
+          espera.data
+        ).toLocaleDateString(
+          "pt-BR"
+        )}
+        <br>
+        ${horarioTexto(
+          espera.horario_inicio
+        )}
+        —
+        ${horarioTexto(
+          espera.horario_fim
+        )}
+      `;
+
     }
   );
 
-  if (error) {
-    console.error("Erro ao consultar reserva:", error);
-    receiptMessage.textContent =
-      "Não foi possível consultar agora.";
-    return;
-  }
-
-  if (!data || !data.length) {
-  const {
-    data: listaEsperaData,
-    error: listaEsperaError
-  } = await supabase.rpc(
-    "consultar_lista_espera_por_whatsapp",
-    {
-      p_whatsapp: whatsapp
-    }
-  );
-
-}
-
-  if (listaEsperaError) {
-    console.error(
-      "Erro ao consultar lista de espera:",
-      listaEsperaError
-    );
-
-    receiptMessage.textContent =
-      "Não foi possível consultar agora.";
-    return;
-  }
-
-  if (!listaEsperaData || !listaEsperaData.length) {
-    receiptMessage.textContent =
-      "Nenhuma reserva ou entrada na lista de espera encontrada para esse WhatsApp.";
-    return;
-  }
-
-  const espera = listaEsperaData[0];
-
-  receiptMessage.innerHTML = `
-    <strong>Entrada na lista de espera encontrada!</strong><br>
-    ${espera.nome}<br>
-    ${espera.turma}<br>
-    ${formatarData(espera.data).toLocaleDateString("pt-BR")}<br>
-    ${horarioTexto(espera.horario_inicio)} — ${horarioTexto(espera.horario_fim)}
-  `;
-
-  return;
-});
 
 // --------------------------------------------------
 // ERRO
 // --------------------------------------------------
 
 function mostrarErro(texto) {
-  const lista = document.querySelector(".time-list");
+
+  const lista =
+    document.querySelector(
+      ".time-list"
+    );
+
 
   if (lista) {
+
     lista.innerHTML = `
       <div class="info-strip">
-        <div class="info-icon">!</div>
-        <div>
-          <strong>Ops!</strong>
-          <span>${texto}</span>
+
+        <div class="info-icon">
+          !
         </div>
+
+        <div>
+
+          <strong>
+            Ops!
+          </strong>
+
+          <span>
+            ${texto}
+          </span>
+
+        </div>
+
       </div>
     `;
+
   }
+
 }
+
 
 // --------------------------------------------------
 // INICIAR
