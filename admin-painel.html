@@ -44,7 +44,7 @@
     }
 
     main {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 30px auto;
       padding: 0 20px;
     }
@@ -92,12 +92,14 @@
       margin-top: 15px;
     }
 
-    input {
+    input,
+    select {
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
       width: 100%;
       max-width: 400px;
+      background: white;
     }
 
     button {
@@ -107,22 +109,86 @@
       cursor: pointer;
     }
 
-    #formNovaAula button {
-      background: #111;
-      color: white;
-    }
-
-    #formNovaAula button:hover {
+    button:hover {
       opacity: 0.9;
     }
 
+    #formNovaAula button,
     #aulasTabela button {
       background: #111;
       color: white;
     }
 
-    #aulasTabela button:hover {
-      opacity: 0.9;
+    .btn-editar {
+      background: #111;
+      color: white;
+      margin-right: 6px;
+    }
+
+    .btn-excluir {
+      background: #b42318;
+      color: white;
+    }
+
+    .btn-fila {
+      background: #555;
+      color: white;
+      margin-right: 6px;
+    }
+
+    .btn-reservar {
+      background: #18794e;
+      color: white;
+    }
+
+    .form-gerenciamento {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .form-gerenciamento h3 {
+      margin-top: 0;
+    }
+
+    .campo {
+      margin-bottom: 12px;
+    }
+
+    .campo label {
+      display: inline-block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .acoes-form {
+      margin-top: 15px;
+    }
+
+    .acoes-form button {
+      margin-right: 8px;
+    }
+
+    .btn-salvar {
+      background: #111;
+      color: white;
+    }
+
+    .btn-cancelar {
+      background: #ddd;
+      color: #111;
+    }
+
+    .mensagem-form {
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    .vazio {
+      color: #666;
     }
 
   </style>
@@ -145,7 +211,7 @@
 
   <main>
 
-    <!-- STATUS DO LOGIN -->
+    <!-- STATUS -->
 
     <div class="card">
 
@@ -158,7 +224,9 @@
     </div>
 
 
+    <!-- ====================================================== -->
     <!-- RESERVAS -->
+    <!-- ====================================================== -->
 
     <div class="card">
 
@@ -182,10 +250,11 @@
 
               <th>Turma</th>
 
+              <th>Ações</th>
+
             </tr>
 
           </thead>
-
 
           <tbody id="reservasTabela">
           </tbody>
@@ -203,43 +272,258 @@
         Nenhuma reserva encontrada.
       </p>
 
+
+      <!-- FORMULÁRIO DE EDIÇÃO DE RESERVA -->
+
+      <div
+        id="formEdicaoReserva"
+        class="form-gerenciamento"
+      >
+
+        <h3>Editar reserva</h3>
+
+        <input
+          type="hidden"
+          id="editarReservaId"
+        >
+
+
+        <div class="campo">
+
+          <label for="editarReservaNome">
+            Nome:
+          </label>
+
+          <br>
+
+          <input
+            type="text"
+            id="editarReservaNome"
+            required
+          >
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarReservaWhatsapp">
+            WhatsApp:
+          </label>
+
+          <br>
+
+          <input
+            type="text"
+            id="editarReservaWhatsapp"
+            required
+          >
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarReservaAula">
+            Aula / Turma:
+          </label>
+
+          <br>
+
+          <select
+            id="editarReservaAula"
+            required
+          >
+          </select>
+
+        </div>
+
+
+        <div class="acoes-form">
+
+          <button
+            type="button"
+            class="btn-salvar"
+            id="salvarEdicaoReserva"
+          >
+            Salvar alterações
+          </button>
+
+          <button
+            type="button"
+            class="btn-cancelar"
+            id="cancelarEdicaoReserva"
+          >
+            Cancelar
+          </button>
+
+        </div>
+
+
+        <p
+          id="mensagemEdicaoReserva"
+          class="mensagem-form"
+        ></p>
+
+      </div>
+
     </div>
 
+
+    <!-- ====================================================== -->
     <!-- LISTA DE ESPERA -->
-
-<div class="card">
-  <h2>Lista de espera</h2>
-
-  <div class="tabela-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Cliente</th>
-          <th>WhatsApp</th>
-          <th>Data</th>
-          <th>Horário</th>
-          <th>Turma</th>
-          <th>Entrada</th>
-        </tr>
-      </thead>
-
-      <tbody id="listaEsperaTabela">
-      </tbody>
-    </table>
-  </div>
-
-  <p
-    id="semListaEspera"
-    class="sem-reservas"
-    style="display: none;"
-  >
-    Nenhuma pessoa na lista de espera.
-  </p>
-</div>
-
-    <!-- AULAS -->
+    <!-- ====================================================== -->
 
     <div class="card">
+
+      <h2>Lista de espera</h2>
+
+      <div class="tabela-container">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Cliente</th>
+
+              <th>WhatsApp</th>
+
+              <th>Data</th>
+
+              <th>Horário</th>
+
+              <th>Turma</th>
+
+              <th>Entrada</th>
+
+              <th>Ações</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="listaEsperaTabela">
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <p
+        id="semListaEspera"
+        class="sem-reservas"
+        style="display: none;"
+      >
+        Nenhuma pessoa na lista de espera.
+      </p>
+
+
+      <!-- FORMULÁRIO DE EDIÇÃO DA LISTA DE ESPERA -->
+
+      <div
+        id="formEdicaoLista"
+        class="form-gerenciamento"
+      >
+
+        <h3>Editar pessoa da lista de espera</h3>
+
+        <input
+          type="hidden"
+          id="editarListaId"
+        >
+
+
+        <div class="campo">
+
+          <label for="editarListaNome">
+            Nome:
+          </label>
+
+          <br>
+
+          <input
+            type="text"
+            id="editarListaNome"
+            required
+          >
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarListaWhatsapp">
+            WhatsApp:
+          </label>
+
+          <br>
+
+          <input
+            type="text"
+            id="editarListaWhatsapp"
+            required
+          >
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarListaAula">
+            Aula / Turma:
+          </label>
+
+          <br>
+
+          <select
+            id="editarListaAula"
+            required
+          >
+          </select>
+
+        </div>
+
+
+        <div class="acoes-form">
+
+          <button
+            type="button"
+            class="btn-salvar"
+            id="salvarEdicaoLista"
+          >
+            Salvar alterações
+          </button>
+
+          <button
+            type="button"
+            class="btn-cancelar"
+            id="cancelarEdicaoLista"
+          >
+            Cancelar
+          </button>
+
+        </div>
+
+
+        <p
+          id="mensagemEdicaoLista"
+          class="mensagem-form"
+        ></p>
+
+      </div>
+
+    </div>
+
+
+    <!-- ====================================================== -->
+    <!-- AULAS -->
+    <!-- ====================================================== -->
+
+    <div class="card">
+
 
       <!-- NOVA AULA -->
 
@@ -251,7 +535,7 @@
         <form id="formNovaAula">
 
 
-          <div style="margin-bottom: 10px;">
+          <div class="campo">
 
             <label for="novaData">
               Data:
@@ -268,7 +552,7 @@
           </div>
 
 
-          <div style="margin-bottom: 10px;">
+          <div class="campo">
 
             <label for="novoInicio">
               Horário de início:
@@ -285,7 +569,7 @@
           </div>
 
 
-          <div style="margin-bottom: 10px;">
+          <div class="campo">
 
             <label for="novoFim">
               Horário de fim:
@@ -302,7 +586,7 @@
           </div>
 
 
-          <div style="margin-bottom: 10px;">
+          <div class="campo">
 
             <label for="novaTurma">
               Turma:
@@ -313,14 +597,14 @@
             <input
               type="text"
               id="novaTurma"
-              placeholder="Ex.: Turma 05"
+              placeholder="Ex.: Iniciante"
               required
             >
 
           </div>
 
 
-          <div style="margin-bottom: 10px;">
+          <div class="campo">
 
             <label for="novaCapacidade">
               Capacidade:
@@ -339,7 +623,10 @@
           </div>
 
 
-          <button type="submit">
+          <button
+            type="submit"
+            style="background:#111;color:white;"
+          >
             Cadastrar aula
           </button>
 
@@ -352,110 +639,136 @@
       </div>
 
 
-      <!-- LISTA DE AULAS -->
-
-
       <!-- EDITAR AULA -->
 
-<div
-  id="formEdicaoAula"
-  style="
-    display: none;
-    margin-bottom: 25px;
-    padding: 20px;
-    background: #f5f5f5;
-    border-radius: 10px;
-  "
->
+      <div
+        id="formEdicaoAula"
+        class="form-gerenciamento"
+      >
 
-  <h3>Editar aula</h3>
+        <h3>Editar aula</h3>
 
-  <input type="hidden" id="editarAulaId">
+        <input
+          type="hidden"
+          id="editarAulaId"
+        >
 
-  <div style="margin-bottom: 10px;">
-    <label for="editarData">
-      Data:
-    </label>
-    <br>
-    <input
-      type="date"
-      id="editarData"
-      required
-    >
-  </div>
 
-  <div style="margin-bottom: 10px;">
-    <label for="editarInicio">
-      Horário de início:
-    </label>
-    <br>
-    <input
-      type="time"
-      id="editarInicio"
-      required
-    >
-  </div>
+        <div class="campo">
 
-  <div style="margin-bottom: 10px;">
-    <label for="editarFim">
-      Horário de fim:
-    </label>
-    <br>
-    <input
-      type="time"
-      id="editarFim"
-      required
-    >
-  </div>
+          <label for="editarData">
+            Data:
+          </label>
 
-  <div style="margin-bottom: 10px;">
-    <label for="editarTurma">
-      Turma:
-    </label>
-    <br>
-    <input
-      type="text"
-      id="editarTurma"
-      required
-    >
-  </div>
+          <br>
 
-  <div style="margin-bottom: 10px;">
-    <label for="editarCapacidade">
-      Capacidade:
-    </label>
-    <br>
-    <input
-      type="number"
-      id="editarCapacidade"
-      min="1"
-      required
-    >
-  </div>
+          <input
+            type="date"
+            id="editarData"
+            required
+          >
 
-  <button
-    type="button"
-    id="salvarEdicaoAula"
-    style="
-      background: #111;
-      color: white;
-      margin-right: 8px;
-    "
-  >
-    Salvar alterações
-  </button>
+        </div>
 
-  <button
-    type="button"
-    id="cancelarEdicaoAula"
-  >
-    Cancelar
-  </button>
 
-  <p id="mensagemEdicaoAula"></p>
+        <div class="campo">
 
-</div>
-      
+          <label for="editarInicio">
+            Horário de início:
+          </label>
+
+          <br>
+
+          <input
+            type="time"
+            id="editarInicio"
+            required
+          >
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarFim">
+            Horário de fim:
+          </label>
+
+          <br>
+
+          <input
+            type="time"
+            id="editarFim"
+            required
+          >
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarTurma">
+            Turma:
+          </label>
+
+          <br>
+
+          <input
+            type="text"
+            id="editarTurma"
+            required
+          >
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarCapacidade">
+            Capacidade:
+          </label>
+
+          <br>
+
+          <input
+            type="number"
+            id="editarCapacidade"
+            min="1"
+            required
+          >
+
+        </div>
+
+
+        <div class="acoes-form">
+
+          <button
+            type="button"
+            class="btn-salvar"
+            id="salvarEdicaoAula"
+          >
+            Salvar alterações
+          </button>
+
+          <button
+            type="button"
+            class="btn-cancelar"
+            id="cancelarEdicaoAula"
+          >
+            Cancelar
+          </button>
+
+        </div>
+
+
+        <p
+          id="mensagemEdicaoAula"
+          class="mensagem-form"
+        ></p>
+
+      </div>
+
+
       <h2>
         Aulas
       </h2>
@@ -516,9 +829,9 @@
 
   <script>
 
-    // ==========================================
+    // ======================================================
     // CONFIGURAÇÃO SUPABASE
-    // ==========================================
+    // ======================================================
 
     const SUPABASE_URL =
       "https://ezxrcpnkdvnhugpdcjup.supabase.co";
@@ -534,14 +847,73 @@
       );
 
 
-    // ==========================================
+    // ======================================================
+    // VARIÁVEIS
+    // ======================================================
+
+    let todasAulas = [];
+
+
+    // ======================================================
+    // PROTEÇÃO CONTRA HTML NOS DADOS
+    // ======================================================
+
+    function escaparHtml(valor) {
+
+      if (valor === null || valor === undefined) {
+        return "";
+      }
+
+      return String(valor)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    // ======================================================
+    // FORMATAR DATA
+    // ======================================================
+
+    function formatarData(data) {
+
+      if (!data) {
+        return "-";
+      }
+
+      return data
+        .split("-")
+        .reverse()
+        .join("/");
+    }
+
+
+    // ======================================================
+    // FORMATAR HORÁRIO
+    // ======================================================
+
+    function formatarHorario(inicio, fim) {
+
+      if (!inicio || !fim) {
+        return "-";
+      }
+
+      return `${inicio.slice(0, 5)} — ${fim.slice(0, 5)}`;
+    }
+
+
+    // ======================================================
     // VERIFICAR ACESSO
-    // ==========================================
+    // ======================================================
 
     async function verificarAcesso() {
 
-      const { data, error } =
-        await supabaseClient.auth.getUser();
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.getUser();
 
 
       if (error || !data.user) {
@@ -557,6 +929,8 @@
         data.user.email;
 
 
+      await carregarAulasBase();
+
       await carregarReservas();
 
       await carregarListaEspera();
@@ -566,57 +940,124 @@
     }
 
 
-    // ==========================================
+    // ======================================================
+    // CARREGAR TODAS AS AULAS
+    // ======================================================
+
+    async function carregarAulasBase() {
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("aulas")
+        .select(
+          "id, data, horario_inicio, horario_fim, turma, capacidade, ativo"
+        )
+        .order("data", {
+          ascending: true
+        })
+        .order("horario_inicio", {
+          ascending: true
+        });
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao carregar aulas:",
+          error
+        );
+
+        todasAulas = [];
+
+        return;
+      }
+
+
+      todasAulas = data || [];
+
+    }
+
+
+    // ======================================================
+    // PREENCHER SELECT DE AULAS
+    // ======================================================
+
+    function preencherSelectAulas(selectId, aulaSelecionadaId = null) {
+
+      const select =
+        document.getElementById(selectId);
+
+
+      if (!select) {
+        return;
+      }
+
+
+      select.innerHTML =
+        `<option value="">Selecione a aula</option>`;
+
+
+      todasAulas.forEach(aula => {
+
+        const option =
+          document.createElement("option");
+
+
+        option.value = aula.id;
+
+
+        option.textContent =
+          `${formatarData(aula.data)} — ` +
+          `${formatarHorario(
+            aula.horario_inicio,
+            aula.horario_fim
+          )} — ` +
+          `${aula.turma}` +
+          `${aula.ativo ? "" : " — INATIVA"}`;
+
+
+        if (
+          aulaSelecionadaId &&
+          aula.id === aulaSelecionadaId
+        ) {
+
+          option.selected = true;
+
+        }
+
+
+        select.appendChild(option);
+
+      });
+
+    }
+
+
+    // ======================================================
     // CARREGAR RESERVAS
-    // ==========================================
+    // ======================================================
 
     async function carregarReservas() {
 
       const {
         data: reservas,
         error: reservasError
-      } =
-        await supabaseClient
-          .from("reservas")
-          .select(
-            "id, aula_id, nome, whatsapp, created_at"
-          )
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          );
-
-
-      if (reservasError) {
-
-        console.error(
-          "Erro ao carregar reservas:",
-          reservasError
-        );
-
-
-        document.getElementById(
-          "semReservas"
-        ).textContent =
-          "Não foi possível carregar as reservas.";
-
-
-        document.getElementById(
-          "semReservas"
-        ).style.display = "block";
-
-
-        return;
-      }
+      } = await supabaseClient
+        .from("reservas")
+        .select(
+          "id, aula_id, nome, whatsapp, created_at"
+        )
+        .order("created_at", {
+          ascending: false
+        });
 
 
       const tabela =
         document.getElementById(
           "reservasTabela"
         );
-
 
       const semReservas =
         document.getElementById(
@@ -627,10 +1068,15 @@
       tabela.innerHTML = "";
 
 
-      if (
-        !reservas ||
-        reservas.length === 0
-      ) {
+      if (reservasError) {
+
+        console.error(
+          "Erro ao carregar reservas:",
+          reservasError
+        );
+
+        semReservas.textContent =
+          "Não foi possível carregar as reservas.";
 
         semReservas.style.display =
           "block";
@@ -639,7 +1085,20 @@
       }
 
 
-      // IDs das aulas relacionadas às reservas
+      if (
+        !reservas ||
+        reservas.length === 0
+      ) {
+
+        semReservas.textContent =
+          "Nenhuma reserva encontrada.";
+
+        semReservas.style.display =
+          "block";
+
+        return;
+      }
+
 
       const aulaIds = [
         ...new Set(
@@ -653,16 +1112,15 @@
       const {
         data: aulas,
         error: aulasError
-      } =
-        await supabaseClient
-          .from("aulas")
-          .select(
-            "id, data, horario_inicio, horario_fim, turma"
-          )
-          .in(
-            "id",
-            aulaIds
-          );
+      } = await supabaseClient
+        .from("aulas")
+        .select(
+          "id, data, horario_inicio, horario_fim, turma"
+        )
+        .in(
+          "id",
+          aulaIds
+        );
 
 
       if (aulasError) {
@@ -672,14 +1130,11 @@
           aulasError
         );
 
-
         semReservas.textContent =
           "As reservas foram encontradas, mas não foi possível carregar os horários.";
 
-
         semReservas.style.display =
           "block";
-
 
         return;
       }
@@ -688,7 +1143,7 @@
       const aulasPorId = {};
 
 
-      aulas.forEach(aula => {
+      (aulas || []).forEach(aula => {
 
         aulasPorId[aula.id] =
           aula;
@@ -710,16 +1165,16 @@
 
         const dataFormatada =
           aula
-            ? aula.data
-                .split("-")
-                .reverse()
-                .join("/")
+            ? formatarData(aula.data)
             : "-";
 
 
         const horario =
           aula
-            ? `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`
+            ? formatarHorario(
+                aula.horario_inicio,
+                aula.horario_fim
+              )
             : "-";
 
 
@@ -732,11 +1187,11 @@
         linha.innerHTML = `
 
           <td>
-            ${reserva.nome}
+            ${escaparHtml(reserva.nome)}
           </td>
 
           <td>
-            ${reserva.whatsapp}
+            ${escaparHtml(reserva.whatsapp)}
           </td>
 
           <td>
@@ -748,7 +1203,25 @@
           </td>
 
           <td>
-            ${turma}
+            ${escaparHtml(turma)}
+          </td>
+
+          <td>
+
+            <button
+              class="btn-editar"
+              onclick="editarReserva('${reserva.id}')"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn-excluir"
+              onclick="excluirReserva('${reserva.id}')"
+            >
+              Excluir
+            </button>
+
           </td>
 
         `;
@@ -766,182 +1239,899 @@
 
     }
 
-    // ==========================================
-// CARREGAR LISTA DE ESPERA
-// ==========================================
 
-async function carregarListaEspera() {
-  const {
-    data: listaEspera,
-    error: listaError
-  } = await supabaseClient
-    .from("lista_espera")
-    .select(
-      "id, aula_id, nome, whatsapp, created_at"
-    )
-    .order(
-      "created_at",
-      {
-        ascending: true
+    // ======================================================
+    // EDITAR RESERVA
+    // ======================================================
+
+    async function editarReserva(id) {
+
+      const {
+        data: reserva,
+        error
+      } = await supabaseClient
+        .from("reservas")
+        .select(
+          "id, aula_id, nome, whatsapp"
+        )
+        .eq("id", id)
+        .single();
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao carregar reserva:",
+          error
+        );
+
+        alert(
+          "Não foi possível carregar os dados da reserva."
+        );
+
+        return;
       }
-    );
 
-  const tabela =
-    document.getElementById(
-      "listaEsperaTabela"
-    );
 
-  const semListaEspera =
-    document.getElementById(
-      "semListaEspera"
-    );
+      document.getElementById(
+        "editarReservaId"
+      ).value = reserva.id;
 
-  tabela.innerHTML = "";
 
-  if (listaError) {
-    console.error(
-      "Erro ao carregar lista de espera:",
-      listaError
-    );
+      document.getElementById(
+        "editarReservaNome"
+      ).value = reserva.nome || "";
 
-    semListaEspera.textContent =
-      "Não foi possível carregar a lista de espera.";
 
-    semListaEspera.style.display =
-      "block";
+      document.getElementById(
+        "editarReservaWhatsapp"
+      ).value = reserva.whatsapp || "";
 
-    return;
-  }
 
-  if (
-    !listaEspera ||
-    listaEspera.length === 0
-  ) {
-    semListaEspera.style.display =
-      "block";
-
-    return;
-  }
-
-  const aulaIds = [
-    ...new Set(
-      listaEspera.map(
-        pessoa => pessoa.aula_id
-      )
-    )
-  ];
-
-  const {
-    data: aulas,
-    error: aulasError
-  } = await supabaseClient
-    .from("aulas")
-    .select(
-      "id, data, horario_inicio, horario_fim, turma"
-    )
-    .in(
-      "id",
-      aulaIds
-    );
-
-  if (aulasError) {
-    console.error(
-      "Erro ao carregar aulas da lista de espera:",
-      aulasError
-    );
-
-    semListaEspera.textContent =
-      "Não foi possível carregar os dados das aulas.";
-
-    semListaEspera.style.display =
-      "block";
-
-    return;
-  }
-
-  const aulasPorId = {};
-
-  (aulas || []).forEach(aula => {
-    aulasPorId[aula.id] = aula;
-  });
-
-  listaEspera.forEach(pessoa => {
-    const aula =
-      aulasPorId[pessoa.aula_id];
-
-    const linha =
-      document.createElement("tr");
-
-    const dataFormatada =
-      aula
-        ? aula.data
-            .split("-")
-            .reverse()
-            .join("/")
-        : "-";
-
-    const horario =
-      aula
-        ? `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`
-        : "-";
-
-    const turma =
-      aula
-        ? aula.turma
-        : "-";
-
-    const entrada =
-      new Date(
-        pessoa.created_at
-      ).toLocaleString(
-        "pt-BR"
+      preencherSelectAulas(
+        "editarReservaAula",
+        reserva.aula_id
       );
 
-    linha.innerHTML = `
-      <td>${pessoa.nome}</td>
-      <td>${pessoa.whatsapp}</td>
-      <td>${dataFormatada}</td>
-      <td>${horario}</td>
-      <td>${turma}</td>
-      <td>${entrada}</td>
-    `;
 
-    tabela.appendChild(
-      linha
-    );
-  });
+      document.getElementById(
+        "mensagemEdicaoReserva"
+      ).textContent = "";
 
-  semListaEspera.style.display =
-    "none";
-}
 
-    // ==========================================
+      document.getElementById(
+        "formEdicaoReserva"
+      ).style.display = "block";
+
+
+      document.getElementById(
+        "formEdicaoReserva"
+      ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
+
+
+    // ======================================================
+    // SALVAR EDIÇÃO DA RESERVA
+    // ======================================================
+
+    document
+      .getElementById("salvarEdicaoReserva")
+      .addEventListener(
+        "click",
+        async () => {
+
+          const id =
+            document.getElementById(
+              "editarReservaId"
+            ).value;
+
+
+          const nome =
+            document.getElementById(
+              "editarReservaNome"
+            ).value.trim();
+
+
+          const whatsapp =
+            document.getElementById(
+              "editarReservaWhatsapp"
+            ).value.trim();
+
+
+          const aulaId =
+            document.getElementById(
+              "editarReservaAula"
+            ).value;
+
+
+          const mensagem =
+            document.getElementById(
+              "mensagemEdicaoReserva"
+            );
+
+
+          if (
+            !id ||
+            !nome ||
+            !whatsapp ||
+            !aulaId
+          ) {
+
+            mensagem.textContent =
+              "Preencha todos os campos.";
+
+            return;
+          }
+
+
+          mensagem.textContent =
+            "Salvando alterações...";
+
+
+          const {
+            error
+          } = await supabaseClient
+            .from("reservas")
+            .update({
+              nome: nome,
+              whatsapp: whatsapp,
+              aula_id: aulaId
+            })
+            .eq("id", id);
+
+
+          if (error) {
+
+            console.error(
+              "Erro ao atualizar reserva:",
+              error
+            );
+
+            mensagem.textContent =
+              "Não foi possível salvar as alterações.";
+
+            return;
+          }
+
+
+          mensagem.textContent =
+            "Reserva atualizada com sucesso!";
+
+
+          await carregarReservas();
+
+
+          setTimeout(() => {
+
+            document.getElementById(
+              "formEdicaoReserva"
+            ).style.display = "none";
+
+          }, 800);
+
+        }
+      );
+
+
+    // ======================================================
+    // CANCELAR EDIÇÃO DA RESERVA
+    // ======================================================
+
+    document
+      .getElementById("cancelarEdicaoReserva")
+      .addEventListener(
+        "click",
+        () => {
+
+          document.getElementById(
+            "formEdicaoReserva"
+          ).style.display = "none";
+
+
+          document.getElementById(
+            "mensagemEdicaoReserva"
+          ).textContent = "";
+
+        }
+      );
+
+
+    // ======================================================
+    // EXCLUIR RESERVA
+    // ======================================================
+
+    async function excluirReserva(id) {
+
+      const confirmar =
+        confirm(
+          "Tem certeza que deseja excluir esta reserva?"
+        );
+
+
+      if (!confirmar) {
+        return;
+      }
+
+
+      const {
+        error
+      } = await supabaseClient
+        .from("reservas")
+        .delete()
+        .eq("id", id);
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao excluir reserva:",
+          error
+        );
+
+        alert(
+          "Não foi possível excluir a reserva."
+        );
+
+        return;
+      }
+
+
+      alert(
+        "Reserva excluída com sucesso."
+      );
+
+
+      await carregarReservas();
+
+      await carregarListaEspera();
+
+    }
+
+
+    // ======================================================
+    // CARREGAR LISTA DE ESPERA
+    // ======================================================
+
+    async function carregarListaEspera() {
+
+      const {
+        data: listaEspera,
+        error: listaError
+      } = await supabaseClient
+        .from("lista_espera")
+        .select(
+          "id, aula_id, nome, whatsapp, created_at"
+        )
+        .order(
+          "created_at",
+          {
+            ascending: true
+          }
+        );
+
+
+      const tabela =
+        document.getElementById(
+          "listaEsperaTabela"
+        );
+
+
+      const semListaEspera =
+        document.getElementById(
+          "semListaEspera"
+        );
+
+
+      tabela.innerHTML = "";
+
+
+      if (listaError) {
+
+        console.error(
+          "Erro ao carregar lista de espera:",
+          listaError
+        );
+
+        semListaEspera.textContent =
+          "Não foi possível carregar a lista de espera.";
+
+        semListaEspera.style.display =
+          "block";
+
+        return;
+      }
+
+
+      if (
+        !listaEspera ||
+        listaEspera.length === 0
+      ) {
+
+        semListaEspera.textContent =
+          "Nenhuma pessoa na lista de espera.";
+
+        semListaEspera.style.display =
+          "block";
+
+        return;
+      }
+
+
+      const aulaIds = [
+        ...new Set(
+          listaEspera.map(
+            pessoa => pessoa.aula_id
+          )
+        )
+      ];
+
+
+      const {
+        data: aulas,
+        error: aulasError
+      } = await supabaseClient
+        .from("aulas")
+        .select(
+          "id, data, horario_inicio, horario_fim, turma"
+        )
+        .in(
+          "id",
+          aulaIds
+        );
+
+
+      if (aulasError) {
+
+        console.error(
+          "Erro ao carregar aulas da lista de espera:",
+          aulasError
+        );
+
+        semListaEspera.textContent =
+          "Não foi possível carregar os dados das aulas.";
+
+        semListaEspera.style.display =
+          "block";
+
+        return;
+      }
+
+
+      const aulasPorId = {};
+
+
+      (aulas || []).forEach(aula => {
+
+        aulasPorId[aula.id] =
+          aula;
+
+      });
+
+
+      listaEspera.forEach(pessoa => {
+
+        const aula =
+          aulasPorId[
+            pessoa.aula_id
+          ];
+
+
+        const linha =
+          document.createElement("tr");
+
+
+        const dataFormatada =
+          aula
+            ? formatarData(aula.data)
+            : "-";
+
+
+        const horario =
+          aula
+            ? formatarHorario(
+                aula.horario_inicio,
+                aula.horario_fim
+              )
+            : "-";
+
+
+        const turma =
+          aula
+            ? aula.turma
+            : "-";
+
+
+        const entrada =
+          new Date(
+            pessoa.created_at
+          ).toLocaleString(
+            "pt-BR"
+          );
+
+
+        linha.innerHTML = `
+
+          <td>
+            ${escaparHtml(pessoa.nome)}
+          </td>
+
+          <td>
+            ${escaparHtml(pessoa.whatsapp)}
+          </td>
+
+          <td>
+            ${dataFormatada}
+          </td>
+
+          <td>
+            ${horario}
+          </td>
+
+          <td>
+            ${escaparHtml(turma)}
+          </td>
+
+          <td>
+            ${entrada}
+          </td>
+
+          <td>
+
+            <button
+              class="btn-editar"
+              onclick="editarPessoaLista('${pessoa.id}')"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn-reservar"
+              onclick="transformarEmReserva('${pessoa.id}')"
+            >
+              Fazer reserva
+            </button>
+
+            <button
+              class="btn-excluir"
+              onclick="excluirPessoaLista('${pessoa.id}')"
+            >
+              Excluir
+            </button>
+
+          </td>
+
+        `;
+
+
+        tabela.appendChild(
+          linha
+        );
+
+      });
+
+
+      semListaEspera.style.display =
+        "none";
+
+    }
+
+
+    // ======================================================
+    // EDITAR PESSOA DA LISTA
+    // ======================================================
+
+    async function editarPessoaLista(id) {
+
+      const {
+        data: pessoa,
+        error
+      } = await supabaseClient
+        .from("lista_espera")
+        .select(
+          "id, aula_id, nome, whatsapp"
+        )
+        .eq("id", id)
+        .single();
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao carregar pessoa da lista:",
+          error
+        );
+
+        alert(
+          "Não foi possível carregar os dados."
+        );
+
+        return;
+      }
+
+
+      document.getElementById(
+        "editarListaId"
+      ).value = pessoa.id;
+
+
+      document.getElementById(
+        "editarListaNome"
+      ).value = pessoa.nome || "";
+
+
+      document.getElementById(
+        "editarListaWhatsapp"
+      ).value =
+        pessoa.whatsapp || "";
+
+
+      preencherSelectAulas(
+        "editarListaAula",
+        pessoa.aula_id
+      );
+
+
+      document.getElementById(
+        "mensagemEdicaoLista"
+      ).textContent = "";
+
+
+      document.getElementById(
+        "formEdicaoLista"
+      ).style.display = "block";
+
+
+      document.getElementById(
+        "formEdicaoLista"
+      ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
+
+
+    // ======================================================
+    // SALVAR EDIÇÃO DA LISTA
+    // ======================================================
+
+    document
+      .getElementById("salvarEdicaoLista")
+      .addEventListener(
+        "click",
+        async () => {
+
+          const id =
+            document.getElementById(
+              "editarListaId"
+            ).value;
+
+
+          const nome =
+            document.getElementById(
+              "editarListaNome"
+            ).value.trim();
+
+
+          const whatsapp =
+            document.getElementById(
+              "editarListaWhatsapp"
+            ).value.trim();
+
+
+          const aulaId =
+            document.getElementById(
+              "editarListaAula"
+            ).value;
+
+
+          const mensagem =
+            document.getElementById(
+              "mensagemEdicaoLista"
+            );
+
+
+          if (
+            !id ||
+            !nome ||
+            !whatsapp ||
+            !aulaId
+          ) {
+
+            mensagem.textContent =
+              "Preencha todos os campos.";
+
+            return;
+          }
+
+
+          mensagem.textContent =
+            "Salvando alterações...";
+
+
+          const {
+            error
+          } = await supabaseClient
+            .from("lista_espera")
+            .update({
+              nome: nome,
+              whatsapp: whatsapp,
+              aula_id: aulaId
+            })
+            .eq("id", id);
+
+
+          if (error) {
+
+            console.error(
+              "Erro ao atualizar lista:",
+              error
+            );
+
+            mensagem.textContent =
+              "Não foi possível salvar as alterações.";
+
+            return;
+          }
+
+
+          mensagem.textContent =
+            "Pessoa atualizada com sucesso!";
+
+
+          await carregarListaEspera();
+
+
+          setTimeout(() => {
+
+            document.getElementById(
+              "formEdicaoLista"
+            ).style.display = "none";
+
+          }, 800);
+
+        }
+      );
+
+
+    // ======================================================
+    // CANCELAR EDIÇÃO DA LISTA
+    // ======================================================
+
+    document
+      .getElementById("cancelarEdicaoLista")
+      .addEventListener(
+        "click",
+        () => {
+
+          document.getElementById(
+            "formEdicaoLista"
+          ).style.display = "none";
+
+
+          document.getElementById(
+            "mensagemEdicaoLista"
+          ).textContent = "";
+
+        }
+      );
+
+
+    // ======================================================
+    // EXCLUIR PESSOA DA LISTA
+    // ======================================================
+
+    async function excluirPessoaLista(id) {
+
+      const confirmar =
+        confirm(
+          "Tem certeza que deseja remover esta pessoa da lista de espera?"
+        );
+
+
+      if (!confirmar) {
+        return;
+      }
+
+
+      const {
+        error
+      } = await supabaseClient
+        .from("lista_espera")
+        .delete()
+        .eq("id", id);
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao excluir pessoa da lista:",
+          error
+        );
+
+        alert(
+          "Não foi possível remover a pessoa da lista."
+        );
+
+        return;
+      }
+
+
+      alert(
+        "Pessoa removida da lista de espera."
+      );
+
+
+      await carregarListaEspera();
+
+    }
+
+
+    // ======================================================
+    // TRANSFORMAR FILA EM RESERVA
+    // ======================================================
+
+    async function transformarEmReserva(id) {
+
+      const confirmar =
+        confirm(
+          "Deseja transformar esta pessoa da lista de espera em uma reserva?"
+        );
+
+
+      if (!confirmar) {
+        return;
+      }
+
+
+      const {
+        data: pessoa,
+        error: pessoaError
+      } = await supabaseClient
+        .from("lista_espera")
+        .select(
+          "id, aula_id, nome, whatsapp"
+        )
+        .eq("id", id)
+        .single();
+
+
+      if (pessoaError) {
+
+        console.error(
+          "Erro ao carregar pessoa:",
+          pessoaError
+        );
+
+        alert(
+          "Não foi possível carregar os dados da pessoa."
+        );
+
+        return;
+      }
+
+
+      /*
+       * Usa a função já existente no Supabase
+       * para fazer a reserva respeitando a capacidade.
+       */
+
+      const {
+        data: resultado,
+        error: reservaError
+      } = await supabaseClient.rpc(
+        "reservar_aula",
+        {
+          p_aula_id: pessoa.aula_id,
+          p_nome: pessoa.nome,
+          p_whatsapp: pessoa.whatsapp
+        }
+      );
+
+
+      if (reservaError) {
+
+        console.error(
+          "Erro ao transformar em reserva:",
+          reservaError
+        );
+
+        alert(
+          "Não foi possível criar a reserva."
+        );
+
+        return;
+      }
+
+
+      const resultadoReserva =
+        resultado && resultado[0]
+          ? resultado[0]
+          : null;
+
+
+      if (
+        !resultadoReserva ||
+        !resultadoReserva.sucesso
+      ) {
+
+        alert(
+          resultadoReserva?.mensagem ||
+          "Não foi possível criar a reserva."
+        );
+
+        return;
+      }
+
+
+      /*
+       * A reserva foi criada.
+       * Agora removemos a pessoa da lista de espera.
+       */
+
+      const {
+        error: excluirError
+      } = await supabaseClient
+        .from("lista_espera")
+        .delete()
+        .eq("id", pessoa.id);
+
+
+      if (excluirError) {
+
+        console.error(
+          "Reserva criada, mas não foi possível remover da lista:",
+          excluirError
+        );
+
+        alert(
+          "A reserva foi criada, mas a pessoa não foi removida automaticamente da lista de espera. Verifique a lista."
+        );
+
+        await carregarReservas();
+
+        await carregarListaEspera();
+
+        return;
+      }
+
+
+      alert(
+        "Reserva criada com sucesso e pessoa removida da lista de espera."
+      );
+
+
+      await carregarReservas();
+
+      await carregarListaEspera();
+
+    }
+
+
+    // ======================================================
     // CARREGAR AULAS
-    // ==========================================
+    // ======================================================
 
     async function carregarAulas() {
 
       const {
         data: aulas,
         error
-      } =
-        await supabaseClient
-          .from("aulas")
-          .select(
-            "id, data, horario_inicio, horario_fim, turma, capacidade, ativo"
-          )
-          .order(
-            "data",
-            {
-              ascending: true
-            }
-          )
-          .order(
-            "horario_inicio",
-            {
-              ascending: true
-            }
-          );
+      } = await supabaseClient
+        .from("aulas")
+        .select(
+          "id, data, horario_inicio, horario_fim, turma, capacidade, ativo"
+        )
+        .order("data", {
+          ascending: true
+        })
+        .order("horario_inicio", {
+          ascending: true
+        });
 
 
       if (error) {
@@ -955,6 +2145,9 @@ async function carregarListaEspera() {
       }
 
 
+      todasAulas = aulas || [];
+
+
       const tabela =
         document.getElementById(
           "aulasTabela"
@@ -965,16 +2158,6 @@ async function carregarListaEspera() {
         document.getElementById(
           "semAulas"
         );
-
-
-      if (!tabela) {
-
-        console.error(
-          "Elemento aulasTabela não encontrado."
-        );
-
-        return;
-      }
 
 
       tabela.innerHTML = "";
@@ -995,20 +2178,18 @@ async function carregarListaEspera() {
       aulas.forEach(aula => {
 
         const linha =
-          document.createElement(
-            "tr"
-          );
+          document.createElement("tr");
 
 
         const dataFormatada =
-          aula.data
-            .split("-")
-            .reverse()
-            .join("/");
+          formatarData(aula.data);
 
 
         const horario =
-          `${aula.horario_inicio.slice(0, 5)} — ${aula.horario_fim.slice(0, 5)}`;
+          formatarHorario(
+            aula.horario_inicio,
+            aula.horario_fim
+          );
 
 
         const status =
@@ -1017,14 +2198,38 @@ async function carregarListaEspera() {
             : "Inativa";
 
 
-      const acao = `
-  <button onclick="editarAula('${aula.id}')">Editar</button>
-  ${
-    aula.ativo
-      ? `<button onclick="alterarStatusAula('${aula.id}', false)">Desativar</button>`
-      : `<button onclick="alterarStatusAula('${aula.id}', true)">Ativar</button>`
-  }
-`;
+        const acao = `
+
+          <button
+            class="btn-editar"
+            onclick="editarAula('${aula.id}')"
+          >
+            Editar
+          </button>
+
+          ${
+            aula.ativo
+
+              ? `
+                <button
+                  class="btn-excluir"
+                  onclick="alterarStatusAula('${aula.id}', false)"
+                >
+                  Desativar
+                </button>
+              `
+
+              : `
+                <button
+                  class="btn-reservar"
+                  onclick="alterarStatusAula('${aula.id}', true)"
+                >
+                  Ativar
+                </button>
+              `
+          }
+
+        `;
 
 
         linha.innerHTML = `
@@ -1038,7 +2243,7 @@ async function carregarListaEspera() {
           </td>
 
           <td>
-            ${aula.turma}
+            ${escaparHtml(aula.turma)}
           </td>
 
           <td>
@@ -1069,9 +2274,9 @@ async function carregarListaEspera() {
     }
 
 
-    // ==========================================
+    // ======================================================
     // ATIVAR / DESATIVAR AULA
-    // ==========================================
+    // ======================================================
 
     async function alterarStatusAula(
       id,
@@ -1091,23 +2296,18 @@ async function carregarListaEspera() {
 
 
       if (!confirmar) {
-
         return;
       }
 
 
       const {
         error
-      } =
-        await supabaseClient
-          .from("aulas")
-          .update({
-            ativo: novoStatus
-          })
-          .eq(
-            "id",
-            id
-          );
+      } = await supabaseClient
+        .from("aulas")
+        .update({
+          ativo: novoStatus
+        })
+        .eq("id", id);
 
 
       if (error) {
@@ -1117,157 +2317,271 @@ async function carregarListaEspera() {
           error
         );
 
-
         alert(
           "Não foi possível alterar o status da aula."
         );
-
 
         return;
       }
 
 
+      await carregarAulasBase();
+
       await carregarAulas();
 
+      await carregarReservas();
+
+      await carregarListaEspera();
+
     }
 
 
-    
+    // ======================================================
+    // EDITAR AULA
+    // ======================================================
+
     async function editarAula(id) {
-  const { data: aula, error } = await supabaseClient
-    .from("aulas")
-    .select("id, data, horario_inicio, horario_fim, turma, capacidade")
-    .eq("id", id)
-    .single();
 
-  if (error) {
-    console.error("Erro ao carregar aula:", error);
-    alert("Não foi possível carregar os dados da aula.");
-    return;
-  }
-
-  document.getElementById("editarAulaId").value = aula.id;
-  document.getElementById("editarData").value = aula.data;
-  document.getElementById("editarInicio").value =
-    aula.horario_inicio.slice(0, 5);
-  document.getElementById("editarFim").value =
-    aula.horario_fim.slice(0, 5);
-  document.getElementById("editarTurma").value = aula.turma;
-  document.getElementById("editarCapacidade").value = aula.capacidade;
-
-  document.getElementById("mensagemEdicaoAula").textContent = "";
-
-  document.getElementById("formEdicaoAula").style.display = "block";
-
-  document.getElementById("formEdicaoAula").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
-    
-    document
-  .getElementById("cancelarEdicaoAula")
-  .addEventListener("click", () => {
-
-    document.getElementById(
-      "formEdicaoAula"
-    ).style.display = "none";
-
-    document.getElementById(
-      "mensagemEdicaoAula"
-    ).textContent = "";
-  });
-
-    document
-  .getElementById("salvarEdicaoAula")
-  .addEventListener("click", async () => {
-
-    const id =
-      document.getElementById("editarAulaId").value;
-
-    const data =
-      document.getElementById("editarData").value;
-
-    const horarioInicio =
-      document.getElementById("editarInicio").value;
-
-    const horarioFim =
-      document.getElementById("editarFim").value;
-
-    const turma =
-      document.getElementById("editarTurma").value.trim();
-
-    const capacidade =
-      Number(
-        document.getElementById("editarCapacidade").value
-      );
-
-    const mensagem =
-      document.getElementById("mensagemEdicaoAula");
-
-    if (
-      !id ||
-      !data ||
-      !horarioInicio ||
-      !horarioFim ||
-      !turma ||
-      !capacidade
-    ) {
-      mensagem.textContent =
-        "Preencha todos os campos corretamente.";
-      return;
-    }
-
-    mensagem.textContent =
-      "Salvando alterações...";
-
-    const { error } =
-      await supabaseClient
-        .from("aulas")
-        .update({
-          data: data,
-          horario_inicio: horarioInicio,
-          horario_fim: horarioFim,
-          turma: turma,
-          capacidade: capacidade
-        })
-        .eq("id", id);
-
-    if (error) {
-      console.error(
-        "Erro ao salvar edição:",
+      const {
+        data: aula,
         error
-      );
+      } = await supabaseClient
+        .from("aulas")
+        .select(
+          "id, data, horario_inicio, horario_fim, turma, capacidade"
+        )
+        .eq("id", id)
+        .single();
 
-      mensagem.textContent =
-        "Não foi possível salvar as alterações.";
 
-      return;
-    }
+      if (error) {
 
-    mensagem.textContent =
-      "Aula atualizada com sucesso!";
+        console.error(
+          "Erro ao carregar aula:",
+          error
+        );
 
-    await carregarAulas();
+        alert(
+          "Não foi possível carregar os dados da aula."
+        );
 
-    setTimeout(() => {
+        return;
+      }
+
+
+      document.getElementById(
+        "editarAulaId"
+      ).value = aula.id;
+
+
+      document.getElementById(
+        "editarData"
+      ).value = aula.data;
+
+
+      document.getElementById(
+        "editarInicio"
+      ).value =
+        aula.horario_inicio.slice(0, 5);
+
+
+      document.getElementById(
+        "editarFim"
+      ).value =
+        aula.horario_fim.slice(0, 5);
+
+
+      document.getElementById(
+        "editarTurma"
+      ).value =
+        aula.turma;
+
+
+      document.getElementById(
+        "editarCapacidade"
+      ).value =
+        aula.capacidade;
+
+
+      document.getElementById(
+        "mensagemEdicaoAula"
+      ).textContent = "";
+
+
       document.getElementById(
         "formEdicaoAula"
-      ).style.display = "none";
-    }, 800);
-  });
+      ).style.display = "block";
 
-    // ==========================================
-    // CADASTRAR NOVA AULA
-    // ==========================================
+
+      document.getElementById(
+        "formEdicaoAula"
+      ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
+
+
+    // ======================================================
+    // CANCELAR EDIÇÃO DA AULA
+    // ======================================================
 
     document
-      .getElementById(
-        "formNovaAula"
-      )
+      .getElementById("cancelarEdicaoAula")
+      .addEventListener(
+        "click",
+        () => {
+
+          document.getElementById(
+            "formEdicaoAula"
+          ).style.display = "none";
+
+
+          document.getElementById(
+            "mensagemEdicaoAula"
+          ).textContent = "";
+
+        }
+      );
+
+
+    // ======================================================
+    // SALVAR EDIÇÃO DA AULA
+    // ======================================================
+
+    document
+      .getElementById("salvarEdicaoAula")
+      .addEventListener(
+        "click",
+        async () => {
+
+          const id =
+            document.getElementById(
+              "editarAulaId"
+            ).value;
+
+
+          const data =
+            document.getElementById(
+              "editarData"
+            ).value;
+
+
+          const horarioInicio =
+            document.getElementById(
+              "editarInicio"
+            ).value;
+
+
+          const horarioFim =
+            document.getElementById(
+              "editarFim"
+            ).value;
+
+
+          const turma =
+            document.getElementById(
+              "editarTurma"
+            ).value.trim();
+
+
+          const capacidade =
+            Number(
+              document.getElementById(
+                "editarCapacidade"
+              ).value
+            );
+
+
+          const mensagem =
+            document.getElementById(
+              "mensagemEdicaoAula"
+            );
+
+
+          if (
+            !id ||
+            !data ||
+            !horarioInicio ||
+            !horarioFim ||
+            !turma ||
+            !capacidade
+          ) {
+
+            mensagem.textContent =
+              "Preencha todos os campos corretamente.";
+
+            return;
+          }
+
+
+          mensagem.textContent =
+            "Salvando alterações...";
+
+
+          const {
+            error
+          } = await supabaseClient
+            .from("aulas")
+            .update({
+              data: data,
+              horario_inicio: horarioInicio,
+              horario_fim: horarioFim,
+              turma: turma,
+              capacidade: capacidade
+            })
+            .eq("id", id);
+
+
+          if (error) {
+
+            console.error(
+              "Erro ao salvar edição:",
+              error
+            );
+
+            mensagem.textContent =
+              "Não foi possível salvar as alterações.";
+
+            return;
+          }
+
+
+          mensagem.textContent =
+            "Aula atualizada com sucesso!";
+
+
+          await carregarAulasBase();
+
+          await carregarAulas();
+
+          await carregarReservas();
+
+          await carregarListaEspera();
+
+
+          setTimeout(() => {
+
+            document.getElementById(
+              "formEdicaoAula"
+            ).style.display = "none";
+
+          }, 800);
+
+        }
+      );
+
+
+    // ======================================================
+    // CADASTRAR NOVA AULA
+    // ======================================================
+
+    document
+      .getElementById("formNovaAula")
       .addEventListener(
         "submit",
-        async (event) => {
+        async event => {
 
           event.preventDefault();
 
@@ -1293,7 +2607,7 @@ async function carregarListaEspera() {
           const turma =
             document.getElementById(
               "novaTurma"
-            ).value;
+            ).value.trim();
 
 
           const capacidade =
@@ -1316,27 +2630,26 @@ async function carregarListaEspera() {
 
           const {
             error
-          } =
-            await supabaseClient
-              .from("aulas")
-              .insert({
+          } = await supabaseClient
+            .from("aulas")
+            .insert({
 
-                data: data,
+              data: data,
 
-                horario_inicio:
-                  horarioInicio,
+              horario_inicio:
+                horarioInicio,
 
-                horario_fim:
-                  horarioFim,
+              horario_fim:
+                horarioFim,
 
-                turma: turma,
+              turma: turma,
 
-                capacidade:
-                  capacidade,
+              capacidade:
+                capacidade,
 
-                ativo: true
+              ativo: true
 
-              });
+            });
 
 
           if (error) {
@@ -1346,10 +2659,8 @@ async function carregarListaEspera() {
               error
             );
 
-
             mensagem.textContent =
               "Erro ao cadastrar aula.";
-
 
             return;
           }
@@ -1373,20 +2684,24 @@ async function carregarListaEspera() {
             .value = 8;
 
 
+          await carregarAulasBase();
+
           await carregarAulas();
+
+          await carregarReservas();
+
+          await carregarListaEspera();
 
         }
       );
 
 
-    // ==========================================
+    // ======================================================
     // LOGOUT
-    // ==========================================
+    // ======================================================
 
     document
-      .getElementById(
-        "logoutBtn"
-      )
+      .getElementById("logoutBtn")
       .addEventListener(
         "click",
         async () => {
@@ -1403,9 +2718,9 @@ async function carregarListaEspera() {
       );
 
 
-    // ==========================================
+    // ======================================================
     // INICIAR PAINEL
-    // ==========================================
+    // ======================================================
 
     verificarAcesso();
 
