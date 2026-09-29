@@ -561,16 +561,7 @@ document.getElementById("receiptSearch").addEventListener("click", async () => {
   return;
 }
 
-  const reserva = data[0];
 
-  receiptMessage.innerHTML = `
-    <strong>Reserva encontrada!</strong><br>
-    ${reserva.nome}<br>
-    ${reserva.turma}<br>
-    ${formatarData(reserva.data).toLocaleDateString("pt-BR")}<br>
-    ${horarioTexto(reserva.horario_inicio)} — ${horarioTexto(reserva.horario_fim)}
-  `;
-});
 
 // --------------------------------------------------
 // ERRO
