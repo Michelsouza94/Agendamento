@@ -142,15 +142,25 @@ async function carregarDados() {
 
   });
 
+if (!aulas.length) {
 
-  if (!aulas.length) {
+  dataSelecionada = null;
 
-    mostrarErro(
-      "Nenhuma aula disponível no momento."
+  const dateCard =
+    document.querySelector(
+      ".date-card"
     );
 
-    return;
+  if (dateCard) {
+    dateCard.innerHTML = "";
   }
+
+  renderizarDatas();
+
+  renderizarHorarios();
+
+  return;
+}
 
 
   dataSelecionada = null;
