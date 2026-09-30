@@ -54,16 +54,21 @@ async function carregarDados() {
 
   const hoje = obterDataHoje();
 
-  const {
-    data: aulasData,
-    error: aulasError
-  } = await supabase
-    .from("aulas")
-    .select("*")
-    .eq("ativo", true)
-    .gte("data", hoje)
-    .order("data")
-    .order("horario_inicio");
+ const hoje = new Date();
+
+const ano = hoje.getFullYear();
+const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+const dia = String(hoje.getDate()).padStart(2, "0");
+
+const dataHoje = `${ano}-${mes}-${dia}`;
+
+const { data: aulasData, error: aulasError } = await supabase
+  .from("aulas")
+  .select("*")
+  .eq("ativo", true)
+  .gte("data", dataHoje)
+  .order("data")
+  .order("horario_inicio");
 
 
   if (aulasError) {
