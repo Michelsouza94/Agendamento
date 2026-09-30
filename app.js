@@ -175,8 +175,6 @@ if (lista) {
   `;
 }
 
-  renderizarHorarios();
-
   return;
 }
 
