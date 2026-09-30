@@ -50,6 +50,26 @@
     .form-gerenciamento h3 { margin-top: 0; margin-bottom: 20px; }
     .campo { margin-bottom: 15px; }
     .campo label { display: inline-block; margin-bottom: 7px; font-weight: 700; color: #334155; }
+
+    /* Formulário de nova aula: compacto no desktop e vertical no celular */
+    #formNovaAula {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: end;
+    }
+
+    #formNovaAula .campo {
+      margin-bottom: 0;
+    }
+
+    #formNovaAula > button {
+      width: 100%;
+      min-height: 43px;
+      align-self: end;
+      background: var(--primary);
+      color: white;
+    }
     .acoes-form { margin-top: 18px; }
     .acoes-form button { margin-right: 8px; }
     .btn-salvar { background: var(--primary); color: white; }
@@ -60,6 +80,15 @@
       header { padding: 18px 16px; } header h1 { font-size: 18px; } #logoutBtn { padding: 9px 13px; }
       main { margin: 20px auto; padding: 0 12px; } .card { padding: 20px 16px; border-radius: 15px; }
       h2 { font-size: 19px; } th, td { padding: 11px 10px; } .form-gerenciamento { padding: 18px 15px; }
+
+      #formNovaAula {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      #formNovaAula .campo {
+        margin-bottom: 15px;
+      }
     }
   </style>
 
@@ -495,7 +524,6 @@
 
           <button
             type="submit"
-            style="background:#111;color:white;"
           >
             Cadastrar aula
           </button>
