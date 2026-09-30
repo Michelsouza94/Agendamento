@@ -5,33 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Agendamento de aulas e atividades">
   <title>Agendamento</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <div class="app-shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">A</div>
-        <div>
-          <strong>Agendamento</strong>
-          <span>Gestão de aulas</span>
-        </div>
-      </div>
 
-      <button class="admin-link" type="button" onclick="window.location.href='admin.html'">
-        Área administrativa <span>↗</span>
-      </button>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark">A</div>
+          <div class="brand-copy">
+            <strong>Agendamento</strong>
+            <span>Gestão de aulas</span>
+          </div>
+        </div>
+
+        <button class="admin-link" type="button" onclick="window.location.href='admin.html'">
+          <span>Área administrativa</span>
+          <b>↗</b>
+        </button>
+      </div>
     </header>
 
     <main>
-      <section class="hero">
-        <div class="hero-copy">
-          <span class="eyebrow">AGENDA</span>
-          <h1>Reserve seu horário.</h1>
-          <p>Escolha a data e encontre uma turma disponível para você.</p>
+
+      <section class="hero-panel">
+        <div class="hero-content">
+          <span class="hero-kicker">AGENDA DE AULAS</span>
+          <h1>Encontre seu<br><em>próximo horário.</em></h1>
+          <p>Selecione uma data e escolha a turma que melhor combina com você.</p>
         </div>
 
         <div class="date-card">
@@ -42,50 +50,63 @@
         </div>
       </section>
 
-      <section class="date-tabs">
-        <button class="date-tab active">
-          <span>SEX</span>
-          <strong>25</strong>
-          <small>SET</small>
-        </button>
+      <section class="date-section">
+        <div class="section-label">
+          <span>01</span>
+          <div>
+            <strong>Escolha a data</strong>
+            <small>Veja os horários disponíveis</small>
+          </div>
+        </div>
 
-        <button class="date-tab">
-          <span>SÁB</span>
-          <strong>26</strong>
-          <small>SET</small>
-        </button>
+        <div class="date-tabs">
+          <button class="date-tab active">
+            <span>SEX</span>
+            <strong>25</strong>
+            <small>SET</small>
+          </button>
 
-        <button class="date-tab">
-          <span>DOM</span>
-          <strong>27</strong>
-          <small>SET</small>
-        </button>
+          <button class="date-tab">
+            <span>SÁB</span>
+            <strong>26</strong>
+            <small>SET</small>
+          </button>
 
-        <button class="date-tab">
-          <span>SEG</span>
-          <strong>28</strong>
-          <small>SET</small>
-        </button>
+          <button class="date-tab">
+            <span>DOM</span>
+            <strong>27</strong>
+            <small>SET</small>
+          </button>
+
+          <button class="date-tab">
+            <span>SEG</span>
+            <strong>28</strong>
+            <small>SET</small>
+          </button>
+        </div>
       </section>
 
-      <section class="schedule">
-        <div class="section-heading">
-          <div>
-            <span class="eyebrow">HORÁRIOS</span>
-            <h2>Escolha sua aula</h2>
+      <section class="schedule-section">
+        <div class="schedule-header">
+          <div class="section-label">
+            <span>02</span>
+            <div>
+              <span class="eyebrow">HORÁRIOS</span>
+              <h2>Escolha sua aula</h2>
+            </div>
           </div>
 
           <span class="availability">3 horários</span>
         </div>
 
         <div class="time-list">
+
           <article class="time-card">
-            <div class="time-main">
-              <div class="time-icon">06</div>
-              <div>
-                <strong>06:00 — 07:00</strong>
-                <span>4 turmas disponíveis</span>
-              </div>
+            <div class="time-badge">06</div>
+
+            <div class="time-info">
+              <strong>06:00 — 07:00</strong>
+              <span>4 turmas disponíveis</span>
             </div>
 
             <div class="capacity">
@@ -98,16 +119,17 @@
               </div>
             </div>
 
-            <button class="details-btn" data-slot="06:00 — 07:00">Ver turmas</button>
+            <button class="details-btn" data-slot="06:00 — 07:00">
+              Ver turmas <span>→</span>
+            </button>
           </article>
 
           <article class="time-card">
-            <div class="time-main">
-              <div class="time-icon">07</div>
-              <div>
-                <strong>07:00 — 08:00</strong>
-                <span>4 turmas disponíveis</span>
-              </div>
+            <div class="time-badge">07</div>
+
+            <div class="time-info">
+              <strong>07:00 — 08:00</strong>
+              <span>4 turmas disponíveis</span>
             </div>
 
             <div class="capacity">
@@ -120,16 +142,17 @@
               </div>
             </div>
 
-            <button class="details-btn" data-slot="07:00 — 08:00">Ver turmas</button>
+            <button class="details-btn" data-slot="07:00 — 08:00">
+              Ver turmas <span>→</span>
+            </button>
           </article>
 
           <article class="time-card">
-            <div class="time-main">
-              <div class="time-icon">08</div>
-              <div>
-                <strong>08:00 — 09:00</strong>
-                <span>3 turmas disponíveis</span>
-              </div>
+            <div class="time-badge">08</div>
+
+            <div class="time-info">
+              <strong>08:00 — 09:00</strong>
+              <span>3 turmas disponíveis</span>
             </div>
 
             <div class="capacity">
@@ -142,8 +165,11 @@
               </div>
             </div>
 
-            <button class="details-btn" data-slot="08:00 — 09:00">Ver turmas</button>
+            <button class="details-btn" data-slot="08:00 — 09:00">
+              Ver turmas <span>→</span>
+            </button>
           </article>
+
         </div>
       </section>
 
@@ -153,7 +179,9 @@
           <strong>Reserva simples e rápida</strong>
           <span>Escolha o horário, informe seus dados e pronto.</span>
         </div>
+        <span class="info-arrow">→</span>
       </section>
+
     </main>
 
     <nav class="bottom-nav">
@@ -167,6 +195,7 @@
         <small>Comprovante</small>
       </button>
     </nav>
+
   </div>
 
   <div class="modal-backdrop" id="modalBackdrop">
