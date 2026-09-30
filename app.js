@@ -152,10 +152,28 @@ if (!aulas.length) {
     );
 
   if (dateCard) {
-    dateCard.innerHTML = "";
-  }
+  dateCard.style.display = "none";
+}
 
   renderizarDatas();
+
+  const lista = document.querySelector(".time-list");
+
+if (lista) {
+  lista.innerHTML = `
+    <div class="info-strip">
+      <div class="info-icon">!</div>
+
+      <div>
+        <strong>Nenhuma aula disponível</strong>
+
+        <span>
+          No momento não há aulas cadastradas.
+        </span>
+      </div>
+    </div>
+  `;
+}
 
   renderizarHorarios();
 
