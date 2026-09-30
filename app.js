@@ -145,6 +145,13 @@ async function carregarDados() {
 if (!aulas.length) {
 
   dataSelecionada = null;
+  
+  const disponibilidade =
+  document.querySelector(".availability");
+
+if (disponibilidade) {
+  disponibilidade.textContent = "";
+}
 
   const dateCard =
     document.querySelector(
