@@ -65,16 +65,7 @@ async function carregarDados() {
     .gte("data", hoje)
     .order("data")
     .order("horario_inicio");
-
-const { data: aulasData, error: aulasError } = await supabase
-  .from("aulas")
-  .select("*")
-  .eq("ativo", true)
-  .gte("data", dataHoje)
-  .order("data")
-  .order("horario_inicio");
-
-
+   
   if (aulasError) {
 
     console.error(
