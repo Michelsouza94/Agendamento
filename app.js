@@ -54,10 +54,6 @@ async function carregarDados() {
 
   const hoje = obterDataHoje();
 
- async function carregarDados() {
-
-  const hoje = obterDataHoje();
-
   const { data: aulasData, error: aulasError } = await supabase
     .from("aulas")
     .select("*")
