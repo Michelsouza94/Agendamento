@@ -615,13 +615,52 @@ function renderizarHorarios() {
             </div>
 
 
-            <button
-              class="details-btn"
-              data-inicio="${grupo.inicio}"
-              data-fim="${grupo.fim}"
-            >
-              Ver turmas
-            </button>
+                      <div class="class-grid">
+            ${grupo.aulas
+              .map(aula => {
+                const reservasAula = contarReservas(aula.id);
+                const vagasRestantes =
+                  Number(aula.capacidade) - reservasAula;
+
+                const pessoasNaEspera =
+                  contarListaEspera(aula.id);
+
+                return `
+                  <button
+                    class="class-option inline-class-option"
+                    data-aula-id="${aula.id}"
+                    ${
+                      vagasRestantes <= 0
+                        ? 'data-lista-espera="true"'
+                        : ""
+                    }
+                  >
+                    <span>
+                      <strong>${aula.turma}</strong>
+                    </span>
+
+                    <span class="class-meta">
+                      ${
+                        pessoasNaEspera > 0
+                          ? `
+                            <small class="wait-badge">
+                              ${pessoasNaEspera} na espera
+                            </small>
+                          `
+                          : ""
+                      }
+
+                      <small>
+                        ${reservasAula}/${aula.capacidade}
+                      </small>
+
+                      <b>›</b>
+                    </span>
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
 
           </article>
         `;
