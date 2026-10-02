@@ -186,7 +186,11 @@ if (lista) {
 }
 
 
-  dataSelecionada = null;
+ const datasDisponiveis = [
+  ...new Set(aulas.map(aula => aula.data))
+];
+
+dataSelecionada = datasDisponiveis[0] || null;
 
 
   renderizarDatas();
