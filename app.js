@@ -668,28 +668,36 @@ function renderizarHorarios() {
       })
       .join("");
 
+lista.querySelectorAll(".inline-class-option").forEach(botao => {
+  botao.addEventListener("click", () => {
+    aulaSelecionada = aulas.find(
+      aula => aula.id === botao.dataset.aulaId
+    );
 
-  lista
-    .querySelectorAll(
-      ".details-btn"
-    )
-    .forEach(botao => {
+    if (!aulaSelecionada) return;
 
-      botao.addEventListener(
-        "click",
-        () => {
+    modoListaEspera =
+      botao.dataset.listaEspera === "true";
 
-          abrirTurmas(
-            botao.dataset.inicio,
-            botao.dataset.fim
-          );
+    const botaoReserva =
+      document.getElementById("reserveBtn");
 
-        }
-      );
+    botaoReserva.textContent =
+      modoListaEspera
+        ? "Entrar na lista de espera"
+        : "Confirmar reserva";
 
-    });
+    form.classList.remove("hidden");
+    message.textContent = "";
 
-}
+    modalSubtitle.textContent =
+      `${formatarData(aulaSelecionada.data).toLocaleDateString("pt-BR")} • ` +
+      `${horarioTexto(aulaSelecionada.horario_inicio)} — ` +
+      `${horarioTexto(aulaSelecionada.horario_fim)}`;
+
+    backdrop.classList.add("open");
+  });
+});
 
 
 // --------------------------------------------------
