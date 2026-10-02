@@ -896,3 +896,450 @@ main {
     display: none;
   }
 }
+/* ===== REDESIGN CLEAN V2 ===== */
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-soft: #fbfcfd;
+  --ink: #17212b;
+  --muted: #7a8794;
+  --line: #e5e9ed;
+  --primary: #24466d;
+  --primary-dark: #1b3858;
+  --accent: #c49a55;
+  --accent-soft: #f5ead8;
+  --success: #3f765f;
+  --shadow: 0 10px 28px rgba(24, 42, 60, .055);
+}
+
+body {
+  background: var(--bg);
+}
+
+.topbar {
+  height: 70px;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(12px);
+}
+
+.topbar-inner,
+main {
+  width: min(1080px, calc(100% - 40px));
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+.brand-copy strong {
+  font-size: 15px;
+}
+
+.brand-copy span {
+  font-size: 10px;
+}
+
+.admin-link {
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 12px;
+  box-shadow: none;
+}
+
+.admin-link:hover {
+  box-shadow: none;
+}
+
+/* Hero mais leve: sem painel azul */
+.hero-panel {
+  margin-top: 34px;
+  min-height: auto;
+  padding: 10px 2px 6px;
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none;
+  overflow: visible;
+}
+
+.hero-panel::after {
+  display: none;
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.hero-kicker {
+  padding: 0;
+  border: 0;
+  color: var(--accent);
+  font-size: 9px;
+  letter-spacing: .16em;
+}
+
+.hero-panel h1 {
+  margin: 9px 0 8px;
+  font-size: clamp(32px, 4.5vw, 48px);
+  line-height: 1.04;
+  letter-spacing: -.055em;
+  color: var(--ink);
+}
+
+.hero-panel h1 em {
+  color: var(--primary);
+}
+
+.hero-panel p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.date-card {
+  width: 112px;
+  min-width: 112px;
+  height: 112px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  color: var(--primary);
+  box-shadow: none;
+}
+
+.date-card span {
+  color: var(--accent);
+  font-size: 9px;
+}
+
+.date-card strong {
+  font-size: 11px;
+}
+
+.date-card b {
+  font-size: 42px;
+}
+
+.date-card small {
+  font-size: 9px;
+}
+
+/* Datas mais simples e horizontais */
+.date-section {
+  margin-top: 27px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.section-label {
+  gap: 11px;
+}
+
+.section-label > span:first-child {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.section-label strong {
+  font-size: 15px;
+}
+
+.section-label small {
+  font-size: 10px;
+}
+
+.date-tabs {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 1px 5px;
+  scrollbar-width: none;
+}
+
+.date-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.date-tab {
+  flex: 0 0 104px;
+  min-height: 64px;
+  border-radius: 13px;
+  padding: 10px 12px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.date-tab:hover {
+  box-shadow: none;
+}
+
+.date-tab strong {
+  font-size: 21px;
+}
+
+.date-tab.active {
+  box-shadow: 0 7px 18px rgba(36,70,109,.13);
+}
+
+/* Horários mais limpos */
+.schedule-section {
+  margin-top: 32px;
+}
+
+.schedule-header {
+  margin-bottom: 13px;
+}
+
+.eyebrow {
+  font-size: 9px;
+}
+
+.schedule-header h2 {
+  margin-top: 4px;
+  font-size: 25px;
+}
+
+.availability {
+  font-size: 11px;
+}
+
+.time-list {
+  gap: 9px;
+}
+
+.time-card {
+  min-height: 82px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.time-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.time-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.time-info strong {
+  font-size: 16px;
+}
+
+.time-info span,
+.capacity span {
+  font-size: 10px;
+}
+
+.capacity strong {
+  font-size: 17px;
+}
+
+.progress {
+  height: 5px;
+  margin-top: 7px;
+}
+
+.details-btn {
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+/* Aviso inferior discreto */
+.info-strip {
+  margin: 20px 0 30px;
+  min-height: 62px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.info-icon {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+}
+
+.info-strip strong {
+  font-size: 12px;
+}
+
+.info-strip span {
+  font-size: 10px;
+}
+
+/* Barra inferior mais discreta */
+.bottom-nav {
+  height: 68px;
+  gap: 90px;
+  box-shadow: 0 -5px 20px rgba(25,43,60,.035);
+}
+
+.nav-item span {
+  font-size: 17px;
+}
+
+.nav-item small {
+  font-size: 9px;
+}
+
+/* Modais continuam iguais na lógica, apenas mais leves */
+.modal-backdrop {
+  background: rgba(12,21,31,.55);
+}
+
+.modal {
+  padding: 27px;
+  border-radius: 19px;
+  box-shadow: 0 25px 65px rgba(0,0,0,.18);
+}
+
+.modal h2 {
+  font-size: 25px;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  .topbar {
+    height: 66px;
+  }
+
+  .topbar-inner,
+  main {
+    width: min(100% - 24px, 620px);
+  }
+
+  .hero-panel {
+    margin-top: 22px;
+    padding-top: 4px;
+    gap: 18px;
+  }
+
+  .hero-panel h1 {
+    font-size: 34px;
+  }
+
+  .hero-panel p {
+    font-size: 12px;
+  }
+
+  .date-card {
+    width: 96px;
+    min-width: 96px;
+    height: 96px;
+    padding: 11px;
+  }
+
+  .date-card b {
+    font-size: 37px;
+  }
+
+  .date-section {
+    margin-top: 22px;
+  }
+
+  .schedule-section {
+    margin-top: 28px;
+  }
+
+  .time-card {
+    grid-template-columns: 43px 1fr;
+    gap: 11px;
+    padding: 13px;
+  }
+
+  .time-badge {
+    width: 43px;
+    height: 43px;
+  }
+
+  .capacity {
+    grid-column: 2;
+  }
+
+  .details-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .bottom-nav {
+    height: 66px;
+    gap: 58px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-panel {
+    align-items: center;
+    padding-top: 0;
+    gap: 10px;
+  }
+
+  .hero-panel h1 {
+    font-size: 29px;
+  }
+
+  .hero-panel p {
+    font-size: 11px;
+  }
+
+  .hero-kicker {
+    font-size: 8px;
+  }
+
+  .date-card {
+    width: 78px;
+    min-width: 78px;
+    height: 86px;
+  }
+
+  .date-card b {
+    font-size: 31px;
+  }
+
+  .date-card strong {
+    font-size: 9px;
+  }
+
+  .date-tab {
+    flex-basis: 88px;
+    min-height: 61px;
+    padding: 8px;
+  }
+
+  .date-tab strong {
+    font-size: 19px;
+  }
+
+  .schedule-header h2 {
+    font-size: 22px;
+  }
+
+  .section-label > span:first-child {
+    width: 26px;
+    height: 26px;
+  }
+
+  .time-info strong {
+    font-size: 14px;
+  }
+
+  .info-strip {
+    align-items: flex-start;
+  }
+
+  .info-arrow {
+    display: none;
+  }
+}
