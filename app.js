@@ -708,24 +708,8 @@ function renderizarHorarios() {
 
                   return `
                     <button
-                      class="
-                        class-option
-                        inline-class-option
-                      "
-                      <button
-  class="
-    class="inline-class-option"
-  "
-  data-aula-id="${aula.id}"
-  ${
-    lotada
-      ? 'data-lista-espera="true"'
-      : ""
-  }
->
-                    
-                      "
-
+                      class="inline-class-option"
+                      data-aula-id="${aula.id}"
                       ${
                         lotada
                           ? 'data-lista-espera="true"'
@@ -734,13 +718,10 @@ function renderizarHorarios() {
                     >
 
                       <span>
-
                         <strong>
                           ${aula.turma}
                         </strong>
-
                       </span>
-
 
                       <span
                         class="class-meta"
@@ -759,11 +740,9 @@ function renderizarHorarios() {
                             : ""
                         }
 
-
                         <small>
                           ${reservasAula}/${aula.capacidade}
                         </small>
-
 
                         <b>
                           ›
