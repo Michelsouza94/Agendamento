@@ -372,6 +372,7 @@ function contarListaEspera(aulaId) {
   return listaEsperaPorAula[aulaId] || 0;
 }
 
+
 async function mostrarListaEspera(aulaId) {
   const {
     data,
@@ -419,6 +420,7 @@ async function mostrarListaEspera(aulaId) {
       .join("\n")
   );
 }
+
 
 // --------------------------------------------------
 // ABRIR RESERVA DA TURMA
@@ -775,19 +777,19 @@ function renderizarHorarios() {
                       >
 
                         ${
-  pessoasNaEspera > 0
-    ? `
-      <span
-        class="wait-badge"
-        data-wait-aula-id="${aula.id}"
-        role="button"
-        tabindex="0"
-      >
-        ${pessoasNaEspera} na espera
-      </span>
-    `
-    : ""
-}
+                          pessoasNaEspera > 0
+                            ? `
+                              <span
+                                class="wait-badge"
+                                data-wait-aula-id="${aula.id}"
+                                role="button"
+                                tabindex="0"
+                              >
+                                ${pessoasNaEspera} na espera
+                              </span>
+                            `
+                            : ""
+                        }
 
                         <small>
                           ${reservasAula}/${aula.capacidade}
@@ -830,34 +832,16 @@ function renderizarHorarios() {
 
     });
 
+
   lista
-  .querySelectorAll(
-    ".wait-badge"
-  )
-  .forEach(badge => {
+    .querySelectorAll(
+      ".wait-badge"
+    )
+    .forEach(badge => {
 
-    badge.addEventListener(
-      "click",
-      event => {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        mostrarListaEspera(
-          badge.dataset.waitAulaId
-        );
-
-      }
-    );
-
-    badge.addEventListener(
-      "keydown",
-      event => {
-
-        if (
-          event.key === "Enter" ||
-          event.key === " "
-        ) {
+      badge.addEventListener(
+        "click",
+        event => {
 
           event.preventDefault();
           event.stopPropagation();
@@ -867,11 +851,33 @@ function renderizarHorarios() {
           );
 
         }
+      );
 
-      }
-    );
 
-  });
+      badge.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            mostrarListaEspera(
+              badge.dataset.waitAulaId
+            );
+
+          }
+
+        }
+      );
+
+    });
+
+}
 
 
 // --------------------------------------------------
