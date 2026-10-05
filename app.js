@@ -712,8 +712,19 @@ function renderizarHorarios() {
                         class-option
                         inline-class-option
                       "
-                      data-aula-id="
-                        ${aula.id}
+                      <button
+  class="
+    class-option
+    inline-class-option
+  "
+  data-aula-id="${aula.id}"
+  ${
+    lotada
+      ? 'data-lista-espera="true"'
+      : ""
+  }
+>
+                    
                       "
 
                       ${
