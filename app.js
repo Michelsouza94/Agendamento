@@ -20,8 +20,128 @@ let aulas = [];
 let reservasPorAula = {};
 let listaEsperaPorAula = {};
 let aulaSelecionada = null;
-let dataSelecionada = null;
+let ladoSelecionado = null;
 let modoListaEspera = false;
+
+
+// --------------------------------------------------
+// ESTILOS NOVOS DA RESERVA
+// --------------------------------------------------
+
+function inserirEstilosReserva() {
+  if (document.getElementById("estilosReservaLados")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "estilosReservaLados";
+
+  style.textContent = `
+    #reservaOcupacao {
+      margin-bottom: 16px;
+    }
+
+    .reserva-ocupacao-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .reserva-ocupacao-title {
+      margin: 0;
+      color: #16365c;
+      font: 800 18px/1.2 "DM Sans", Arial, sans-serif;
+    }
+
+    .reserva-ocupacao-total {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #71809a;
+      font: 800 12px/1 "DM Sans", Arial, sans-serif;
+      white-space: nowrap;
+    }
+
+    .reserva-lados {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .reserva-lado {
+      appearance: none;
+      width: 100%;
+      border: 1px solid #dfe5eb;
+      border-radius: 12px;
+      background: #fffdf9;
+      color: #16365c;
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .reserva-lado:hover {
+      border-color: #bfcbd7;
+      transform: translateY(-1px);
+    }
+
+    .reserva-lado.selecionado {
+      border-color: #24466d;
+      box-shadow: 0 0 0 2px rgba(36, 70, 109, .10);
+      background: #f7fafc;
+    }
+
+    .reserva-lado-titulo {
+      font: 800 12px/1.2 "DM Sans", Arial, sans-serif;
+      margin-bottom: 9px;
+    }
+
+    .reserva-lado-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .reserva-pessoa,
+    .reserva-vaga {
+      min-height: 30px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      font: 700 12px/1.2 "DM Sans", Arial, sans-serif;
+      display: flex;
+      align-items: center;
+    }
+
+    .reserva-pessoa {
+      background: #edf2f7;
+      color: #24466d;
+    }
+
+    .reserva-vaga {
+      background: #fafafa;
+      color: #71809a;
+      border: 1px dashed #dfe5eb;
+      font-weight: 600;
+    }
+
+    .reserva-escolha-aviso {
+      margin: 10px 0 0;
+      color: #71809a;
+      font: 600 11px/1.4 "DM Sans", Arial, sans-serif;
+    }
+
+    @media (max-width: 620px) {
+      .reserva-lados {
+        grid-template-columns: 1fr;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
 
 
 // --------------------------------------------------
@@ -46,11 +166,58 @@ function obterDataHoje() {
 
 
 // --------------------------------------------------
+// SEGURANÇA DO TEXTO EXIBIDO
+// --------------------------------------------------
+
+function escaparHtml(valor) {
+  if (
+    valor === null ||
+    valor === undefined
+  ) {
+    return "";
+  }
+
+  return String(valor)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+// --------------------------------------------------
+// CAPACIDADE POR LADO
+// --------------------------------------------------
+
+function capacidadeDoLado(
+  capacidade,
+  lado
+) {
+  const total =
+    Number(capacidade) || 0;
+
+  if (
+    lado === "Esquerda"
+  ) {
+    return Math.ceil(
+      total / 2
+    );
+  }
+
+  return Math.floor(
+    total / 2
+  );
+}
+
+
+// --------------------------------------------------
 // CARREGAR DADOS
 // --------------------------------------------------
 
 async function carregarDados() {
-  const hoje = obterDataHoje();
+  const hoje =
+    obterDataHoje();
 
   const {
     data: aulasData,
@@ -110,32 +277,52 @@ async function carregarDados() {
     );
   }
 
-  aulas = aulasData || [];
+  aulas =
+    aulasData || [];
 
   reservasPorAula = {};
 
-  (reservasData || []).forEach(item => {
-    reservasPorAula[item.aula_id] =
-      Number(item.quantidade);
-  });
+  (
+    reservasData || []
+  ).forEach(
+    item => {
+      reservasPorAula[
+        item.aula_id
+      ] =
+        Number(
+          item.quantidade
+        );
+    }
+  );
 
   listaEsperaPorAula = {};
 
-  (listaEsperaData || []).forEach(item => {
-    listaEsperaPorAula[item.aula_id] =
-      Number(item.quantidade);
-  });
+  (
+    listaEsperaData || []
+  ).forEach(
+    item => {
+      listaEsperaPorAula[
+        item.aula_id
+      ] =
+        Number(
+          item.quantidade
+        );
+    }
+  );
 
-  if (!aulas.length) {
-    dataSelecionada = null;
-
+  if (
+    !aulas.length
+  ) {
     const disponibilidade =
       document.querySelector(
         ".availability"
       );
 
-    if (disponibilidade) {
-      disponibilidade.textContent = "";
+    if (
+      disponibilidade
+    ) {
+      disponibilidade.textContent =
+        "";
     }
 
     const dateCard =
@@ -143,8 +330,11 @@ async function carregarDados() {
         ".date-card"
       );
 
-    if (dateCard) {
-      dateCard.style.display = "none";
+    if (
+      dateCard
+    ) {
+      dateCard.style.display =
+        "none";
     }
 
     const lista =
@@ -152,10 +342,14 @@ async function carregarDados() {
         ".time-list"
       );
 
-    if (lista) {
+    if (
+      lista
+    ) {
       lista.innerHTML = `
         <div class="info-strip">
-          <div class="info-icon">!</div>
+          <div class="info-icon">
+            !
+          </div>
 
           <div>
             <strong>
@@ -176,13 +370,15 @@ async function carregarDados() {
   const datasDisponiveis = [
     ...new Set(
       aulas.map(
-        aula => aula.data
+        aula =>
+          aula.data
       )
     )
   ];
 
-  dataSelecionada =
-    datasDisponiveis[0] || null;
+  window.dataSelecionada =
+    datasDisponiveis[0] ||
+    null;
 
   renderizarDatas();
 
@@ -194,46 +390,73 @@ async function carregarDados() {
 // DATAS
 // --------------------------------------------------
 
-function formatarData(data) {
+function formatarData(
+  data
+) {
   const partes =
-    data.split("-");
+    String(data).split(
+      "-"
+    );
 
   return new Date(
-    Number(partes[0]),
-    Number(partes[1]) - 1,
-    Number(partes[2])
+    Number(
+      partes[0]
+    ),
+    Number(
+      partes[1]
+    ) - 1,
+    Number(
+      partes[2]
+    )
   );
 }
 
 
-function diaSemana(data) {
-  return formatarData(data)
+function diaSemana(
+  data
+) {
+  return formatarData(
+    data
+  )
     .toLocaleDateString(
       "pt-BR",
       {
         weekday: "short"
       }
     )
-    .replace(".", "")
+    .replace(
+      ".",
+      ""
+    )
     .toUpperCase();
 }
 
 
-function diaNumero(data) {
-  return formatarData(data)
-    .getDate();
+function diaNumero(
+  data
+) {
+  return formatarData(
+    data
+  ).getDate();
 }
 
 
-function mesAbreviado(data) {
-  return formatarData(data)
+function mesAbreviado(
+  data
+) {
+  return formatarData(
+    data
+  )
     .toLocaleDateString(
       "pt-BR",
       {
         month: "short"
       }
     )
-    .replace(".", "")
+    .replace(
+      ".",
+      ""
+    )
     .toUpperCase();
 }
 
@@ -244,14 +467,17 @@ function renderizarDatas() {
       ".date-tabs"
     );
 
-  if (!container) {
+  if (
+    !container
+  ) {
     return;
   }
 
   const datas = [
     ...new Set(
       aulas.map(
-        aula => aula.data
+        aula =>
+          aula.data
       )
     )
   ];
@@ -262,12 +488,15 @@ function renderizarDatas() {
         data => `
           <button
             class="date-tab ${
-              data === dataSelecionada
+              data ===
+              window.dataSelecionada
                 ? "active"
                 : ""
             }"
             data-date="${data}"
+            type="button"
           >
+
             <span>
               ${diaSemana(data)}
             </span>
@@ -279,6 +508,7 @@ function renderizarDatas() {
             <small>
               ${mesAbreviado(data)}
             </small>
+
           </button>
         `
       )
@@ -288,40 +518,49 @@ function renderizarDatas() {
     .querySelectorAll(
       ".date-tab"
     )
-    .forEach(botao => {
-      botao.addEventListener(
-        "click",
-        () => {
+    .forEach(
+      botao => {
 
-          dataSelecionada =
-            botao.dataset.date;
+        botao.addEventListener(
+          "click",
+          () => {
 
-          container
-            .querySelectorAll(
-              ".date-tab"
-            )
-            .forEach(item => {
-              item.classList.remove(
-                "active"
+            window.dataSelecionada =
+              botao.dataset.date;
+
+            container
+              .querySelectorAll(
+                ".date-tab"
+              )
+              .forEach(
+                item => {
+
+                  item.classList.remove(
+                    "active"
+                  );
+
+                }
               );
-            });
 
-          botao.classList.add(
-            "active"
-          );
+            botao.classList.add(
+              "active"
+            );
 
-          renderizarHorarios();
-        }
-      );
-    });
+            renderizarHorarios();
 
-  const primeiraData =
-    datas[0];
+          }
+        );
+
+      }
+    );
 
   const dateCard =
     document.querySelector(
       ".date-card"
     );
+
+  const primeiraData =
+    datas[0];
 
   if (
     dateCard &&
@@ -329,374 +568,501 @@ function renderizarDatas() {
   ) {
     dateCard.style.display =
       "none";
-
-    dateCard.innerHTML = `
-      <span>
-        Próximo dia
-      </span>
-
-      <strong>
-        ${diaSemana(primeiraData)}
-      </strong>
-
-      <b>
-        ${diaNumero(primeiraData)}
-      </b>
-
-      <small>
-        ${mesAbreviado(primeiraData)}
-      </small>
-    `;
   }
 }
 
 
 // --------------------------------------------------
-// HORÁRIOS
+// UTILITÁRIOS
 // --------------------------------------------------
 
-function horarioTexto(hora) {
-  return hora.substring(
+function horarioTexto(
+  hora
+) {
+  return String(
+    hora || ""
+  ).substring(
     0,
     5
   );
 }
 
 
-function contarReservas(aulaId) {
-  return reservasPorAula[aulaId] || 0;
+function contarReservas(
+  aulaId
+) {
+  return (
+    reservasPorAula[
+      aulaId
+    ] || 0
+  );
 }
 
 
-function contarListaEspera(aulaId) {
-  return listaEsperaPorAula[aulaId] || 0;
+function contarListaEspera(
+  aulaId
+) {
+  return (
+    listaEsperaPorAula[
+      aulaId
+    ] || 0
+  );
 }
 
 
-async function mostrarListaEspera(aulaId) {
+function atualizarBotaoReserva() {
+  const botao =
+    document.getElementById(
+      "reserveBtn"
+    );
 
+  if (
+    !botao ||
+    !aulaSelecionada
+  ) {
+    return;
+  }
+
+  if (
+    !ladoSelecionado
+  ) {
+    modoListaEspera =
+      false;
+
+    botao.disabled =
+      true;
+
+    botao.textContent =
+      "Escolha um lado";
+
+    return;
+  }
+
+  const quantidade =
+    Number(
+      document
+        .querySelector(
+          `.reserva-lado[data-lado="${ladoSelecionado}"]`
+        )
+        ?.dataset.quantidade ||
+        0
+    );
+
+  const capacidade =
+    capacidadeDoLado(
+      aulaSelecionada.capacidade,
+      ladoSelecionado
+    );
+
+  modoListaEspera =
+    quantidade >=
+    capacidade;
+
+  botao.disabled =
+    false;
+
+  botao.textContent =
+    modoListaEspera
+      ? "Entrar na lista de espera"
+      : "Confirmar reserva";
+}
+
+
+// --------------------------------------------------
+// OCUPAÇÃO DA TURMA
+// --------------------------------------------------
+
+async function carregarNomesReservasDaAula(
+  aulaId
+) {
   const {
     data,
     error
   } = await supabase.rpc(
-    "consultar_nomes_lista_espera_por_aula",
+    "consultar_nomes_reservas_por_aula",
     {
-      p_aula_id: aulaId
+      p_aula_id:
+        aulaId
     }
   );
 
-  if (error) {
-
+  if (
+    error
+  ) {
     console.error(
-      "Erro ao consultar lista de espera:",
+      "Erro ao consultar reservas da turma:",
       error
     );
 
-    alert(
-      "Não foi possível consultar a lista de espera."
-    );
-
-    return;
+    return [];
   }
+
+  return data || [];
+}
+
+
+function montarPainelLado(
+  lado,
+  reservasDoLado,
+  capacidade
+) {
+  const quantidade =
+    reservasDoLado.length;
 
   const nomes =
-    (data || [])
-      .map(item => item.nome)
+    reservasDoLado
+      .map(
+        item =>
+          String(
+            item.nome ||
+              ""
+          ).trim()
+      )
       .filter(Boolean);
 
-  if (!nomes.length) {
-
-    alert(
-      "Nenhuma pessoa está na lista de espera."
+  const vagas =
+    Math.max(
+      0,
+      capacidade -
+        quantidade
     );
 
+  const pessoasHtml =
+    nomes
+      .map(
+        nome => `
+          <div class="reserva-pessoa">
+            ${escaparHtml(
+              nome
+            )}
+          </div>
+        `
+      )
+      .join("");
+
+  const vagasHtml =
+    Array.from(
+      {
+        length:
+          vagas
+      },
+      () => `
+        <div class="reserva-vaga">
+          vaga livre
+        </div>
+      `
+    ).join("");
+
+  return `
+    <button
+      type="button"
+      class="reserva-lado ${
+        ladoSelecionado ===
+        lado
+          ? "selecionado"
+          : ""
+      }"
+      data-lado="${lado}"
+      data-quantidade="${quantidade}"
+    >
+
+      <div
+        class="reserva-lado-titulo"
+      >
+        ${lado} ·
+        ${quantidade}/${capacidade}
+      </div>
+
+      <div
+        class="reserva-lado-lista"
+      >
+        ${pessoasHtml}
+        ${vagasHtml}
+      </div>
+
+    </button>
+  `;
+}
+
+
+function criarOuObterOcupacao() {
+  if (
+    !form
+  ) {
+    return null;
+  }
+
+  let ocupacao =
+    document.getElementById(
+      "reservaOcupacao"
+    );
+
+  if (
+    !ocupacao
+  ) {
+    ocupacao =
+      document.createElement(
+        "div"
+      );
+
+    ocupacao.id =
+      "reservaOcupacao";
+
+    form.insertBefore(
+      ocupacao,
+      form.firstChild
+    );
+  }
+
+  return ocupacao;
+}
+
+
+async function atualizarOcupacaoReserva() {
+  if (
+    !aulaSelecionada
+  ) {
     return;
   }
 
-
-  const overlay =
-    document.createElement("div");
-
-  overlay.id =
-    "listaEsperaModal";
-
-  overlay.style.position =
-    "fixed";
-
-  overlay.style.inset =
-    "0";
-
-  overlay.style.background =
-    "rgba(22, 54, 92, 0.38)";
-
-  overlay.style.display =
-    "flex";
-
-  overlay.style.alignItems =
-    "center";
-
-  overlay.style.justifyContent =
-    "center";
-
-  overlay.style.padding =
-    "20px";
-
-  overlay.style.zIndex =
-    "9999";
-
-
-  const modal =
-    document.createElement("div");
-
-  modal.style.width =
-    "min(420px, 100%)";
-
-  modal.style.background =
-    "#fffdf9";
-
-  modal.style.border =
-    "1px solid #dfe5eb";
-
-  modal.style.borderRadius =
-    "16px";
-
-  modal.style.boxShadow =
-    "0 18px 50px rgba(22, 54, 92, 0.18)";
-
-  modal.style.padding =
-    "24px";
-
-
-  const titulo =
-    document.createElement("h3");
-
-  titulo.textContent =
-    "Lista de espera";
-
-  titulo.style.margin =
-    "0 0 6px";
-
-  titulo.style.color =
-    "#16365c";
-
-  titulo.style.fontFamily =
-    '"DM Sans", Arial, sans-serif';
-
-  titulo.style.fontSize =
-    "20px";
-
-
-  const subtitulo =
-    document.createElement("p");
-
-  subtitulo.textContent =
-    `${nomes.length} ${
-      nomes.length === 1
-        ? "pessoa está"
-        : "pessoas estão"
-    } na lista de espera.`;
-
-  subtitulo.style.margin =
-    "0 0 18px";
-
-  subtitulo.style.color =
-    "#71809a";
-
-  subtitulo.style.fontFamily =
-    '"DM Sans", Arial, sans-serif';
-
-  subtitulo.style.fontSize =
-    "13px";
-
-
-  const lista =
-    document.createElement("div");
-
-  lista.style.display =
-    "flex";
-
-  lista.style.flexDirection =
-    "column";
-
-  lista.style.gap =
-    "8px";
-
-
-  nomes.forEach(
-    (nome, indice) => {
-
-      const item =
-        document.createElement("div");
-
-      item.style.padding =
-        "11px 13px";
-
-      item.style.border =
-        "1px solid #dfe5eb";
-
-      item.style.borderRadius =
-        "10px";
-
-      item.style.background =
-        "#fff";
-
-      item.style.color =
-        "#16365c";
-
-      item.style.fontFamily =
-        '"DM Sans", Arial, sans-serif';
-
-      item.style.fontSize =
-        "14px";
-
-      item.style.fontWeight =
-        "700";
-
-      item.textContent =
-        `${indice + 1}. ${nome}`;
-
-      lista.appendChild(item);
-
-    }
-  );
-
-
-  const fechar =
-    document.createElement("button");
-
-  fechar.type =
-    "button";
-
-  fechar.textContent =
-    "Fechar";
-
-  fechar.style.width =
-    "100%";
-
-  fechar.style.marginTop =
-    "20px";
-
-  fechar.style.border =
-    "0";
-
-  fechar.style.borderRadius =
-    "10px";
-
-  fechar.style.padding =
-    "11px 14px";
-
-  fechar.style.background =
-    "#24466d";
-
-  fechar.style.color =
-    "#fff";
-
-  fechar.style.fontFamily =
-    '"DM Sans", Arial, sans-serif';
-
-  fechar.style.fontWeight =
-    "700";
-
-  fechar.style.cursor =
-    "pointer";
-
-
-  fechar.addEventListener(
-    "click",
-    () => {
-
-      overlay.remove();
-
-    }
-  );
-
-
-  overlay.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target ===
-        overlay
-      ) {
-
-        overlay.remove();
+  const ocupacao =
+    criarOuObterOcupacao();
+
+  if (
+    !ocupacao
+  ) {
+    return;
+  }
+
+  ocupacao.innerHTML = `
+    <div
+      class="reserva-ocupacao-header"
+    >
+
+      <h3
+        class="reserva-ocupacao-title"
+      >
+        ${escaparHtml(
+          aulaSelecionada.turma
+        )}
+      </h3>
+
+      <span
+        class="reserva-ocupacao-total"
+      >
+
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+
+          <path
+            d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+            stroke="currentColor"
+            stroke-width="1.7"
+          />
+
+          <path
+            d="M15.5 10a2.5 2.5 0 1 0 0-5"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+          />
+
+          <path
+            d="M4 19c0-3 2.2-5 5-5s5 2 5 5"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+          />
+
+          <path
+            d="M15 14.5c2.6.2 4.5 1.8 4.8 4.5"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+          />
+
+        </svg>
+
+        ${contarReservas(
+          aulaSelecionada.id
+        )}/${Number(
+          aulaSelecionada.capacidade
+        )}
+
+      </span>
+
+    </div>
+
+    <div
+      class="reserva-lados"
+    >
+      <div
+        class="reserva-carregando"
+      >
+        Carregando...
+      </div>
+    </div>
+  `;
+
+  const reservas =
+    await carregarNomesReservasDaAula(
+      aulaSelecionada.id
+    );
+
+  const esquerda =
+    reservas.filter(
+      item =>
+        item.lado ===
+        "Esquerda"
+    );
+
+  const direita =
+    reservas.filter(
+      item =>
+        item.lado ===
+        "Direita"
+    );
+
+  const capacidadeEsquerda =
+    capacidadeDoLado(
+      aulaSelecionada.capacidade,
+      "Esquerda"
+    );
+
+  const capacidadeDireita =
+    capacidadeDoLado(
+      aulaSelecionada.capacidade,
+      "Direita"
+    );
+
+  const lados =
+    ocupacao.querySelector(
+      ".reserva-lados"
+    );
+
+  lados.innerHTML =
+    montarPainelLado(
+      "Esquerda",
+      esquerda,
+      capacidadeEsquerda
+    ) +
+    montarPainelLado(
+      "Direita",
+      direita,
+      capacidadeDireita
+    );
+
+  let aviso =
+    document.getElementById(
+      "reservaEscolhaAviso"
+    );
+
+  if (
+    !aviso
+  ) {
+    aviso =
+      document.createElement(
+        "p"
+      );
+
+    aviso.id =
+      "reservaEscolhaAviso";
+
+    aviso.className =
+      "reserva-escolha-aviso";
+
+    ocupacao.appendChild(
+      aviso
+    );
+  }
+
+  aviso.textContent =
+    ladoSelecionado
+      ? `Lado selecionado: ${ladoSelecionado}`
+      : "Escolha Esquerda ou Direita para continuar.";
+
+  lados
+    .querySelectorAll(
+      ".reserva-lado"
+    )
+    .forEach(
+      botao => {
+
+        botao.addEventListener(
+          "click",
+          () => {
+
+            ladoSelecionado =
+              botao.dataset.lado;
+
+            lados
+              .querySelectorAll(
+                ".reserva-lado"
+              )
+              .forEach(
+                item => {
+
+                  item.classList.remove(
+                    "selecionado"
+                  );
+
+                }
+              );
+
+            botao.classList.add(
+              "selecionado"
+            );
+
+            aviso.textContent =
+              `Lado selecionado: ${ladoSelecionado}`;
+
+            atualizarBotaoReserva();
+
+          }
+        );
 
       }
+    );
 
-    }
-  );
-
-
-  modal.appendChild(
-    titulo
-  );
-
-  modal.appendChild(
-    subtitulo
-  );
-
-  modal.appendChild(
-    lista
-  );
-
-  modal.appendChild(
-    fechar
-  );
-
-  overlay.appendChild(
-    modal
-  );
-
-  document.body.appendChild(
-    overlay
-  );
+  atualizarBotaoReserva();
 }
 
 
 // --------------------------------------------------
-// ABRIR RESERVA DA TURMA
+// ABRIR RESERVA
 // --------------------------------------------------
 
-function abrirReservaDaAula(
+async function abrirReservaDaAula(
   aulaId
 ) {
   aulaSelecionada =
     aulas.find(
       aula =>
-        aula.id === aulaId
-    );
+        aula.id ===
+        aulaId
+    ) || null;
 
-  if (!aulaSelecionada) {
+  if (
+    !aulaSelecionada
+  ) {
     return;
   }
 
-  const reservasAtuais =
-    contarReservas(
-      aulaSelecionada.id
-    );
-
-  const capacidade =
-    Number(
-      aulaSelecionada.capacidade
-    );
+  ladoSelecionado =
+    null;
 
   modoListaEspera =
-    reservasAtuais >= capacidade;
+    false;
 
-  const botaoReserva =
-    document.getElementById(
-      "reserveBtn"
-    );
-
-  if (botaoReserva) {
-    botaoReserva.textContent =
-      modoListaEspera
-        ? "Entrar na lista de espera"
-        : "Confirmar reserva";
-  }
-
-  if (modalSubtitle) {
+  if (
+    modalSubtitle
+  ) {
     modalSubtitle.textContent =
       `${formatarData(
         aulaSelecionada.data
@@ -711,21 +1077,69 @@ function abrirReservaDaAula(
       )}`;
   }
 
-  if (form) {
+  if (
+    form
+  ) {
     form.classList.remove(
       "hidden"
     );
   }
 
-  if (message) {
-    message.textContent = "";
+  if (
+    message
+  ) {
+    message.textContent =
+      "";
   }
 
-  if (backdrop) {
+  const nameInput =
+    document.getElementById(
+      "nameInput"
+    );
+
+  const phoneInput =
+    document.getElementById(
+      "phoneInput"
+    );
+
+  if (
+    nameInput
+  ) {
+    nameInput.value =
+      "";
+  }
+
+  if (
+    phoneInput
+  ) {
+    phoneInput.value =
+      "";
+  }
+
+  if (
+    backdrop
+  ) {
     backdrop.classList.add(
       "open"
     );
   }
+
+  const botaoReserva =
+    document.getElementById(
+      "reserveBtn"
+    );
+
+  if (
+    botaoReserva
+  ) {
+    botaoReserva.disabled =
+      true;
+
+    botaoReserva.textContent =
+      "Escolha um lado";
+  }
+
+  await atualizarOcupacaoReserva();
 }
 
 
@@ -744,7 +1158,9 @@ function renderizarHorarios() {
       ".availability"
     );
 
-  if (!lista) {
+  if (
+    !lista
+  ) {
     return;
   }
 
@@ -752,50 +1168,72 @@ function renderizarHorarios() {
     aulas.filter(
       aula =>
         aula.data ===
-        dataSelecionada
+        window.dataSelecionada
     );
 
-  const grupos = {};
+  const grupos =
+    {};
 
-  aulasDoDia.forEach(aula => {
-    const chave =
-      `${aula.horario_inicio}-${aula.horario_fim}`;
+  aulasDoDia.forEach(
+    aula => {
 
-    if (!grupos[chave]) {
-      grupos[chave] = {
-        inicio:
-          aula.horario_inicio,
+      const chave =
+        `${aula.horario_inicio}-${aula.horario_fim}`;
 
-        fim:
-          aula.horario_fim,
+      if (
+        !grupos[chave]
+      ) {
+        grupos[chave] = {
+          inicio:
+            aula.horario_inicio,
 
-        aulas: []
-      };
+          fim:
+            aula.horario_fim,
+
+          aulas:
+            []
+        };
+      }
+
+      grupos[
+        chave
+      ]
+        .aulas
+        .push(
+          aula
+        );
+
     }
-
-    grupos[chave]
-      .aulas
-      .push(aula);
-  });
+  );
 
   const horarios =
     Object.values(
       grupos
     );
 
-  if (disponibilidade) {
+  if (
+    disponibilidade
+  ) {
     disponibilidade.textContent =
       `${horarios.length} ${
-        horarios.length === 1
+        horarios.length ===
+        1
           ? "horário"
           : "horários"
       }`;
   }
 
-  if (!horarios.length) {
+  if (
+    !horarios.length
+  ) {
     lista.innerHTML = `
-      <div class="info-strip">
-        <div class="info-icon">
+      <div
+        class="info-strip"
+      >
+
+        <div
+          class="info-icon"
+        >
           !
         </div>
 
@@ -808,6 +1246,7 @@ function renderizarHorarios() {
             Escolha outra data.
           </span>
         </div>
+
       </div>
     `;
 
@@ -816,286 +1255,303 @@ function renderizarHorarios() {
 
   lista.innerHTML =
     horarios
-      .map(grupo => {
+      .map(
+        grupo => {
 
-        const totalCapacidade =
-          grupo.aulas.reduce(
-            (
-              total,
-              aula
-            ) =>
-              total +
-              Number(
-                aula.capacidade ||
-                0
-              ),
+          const totalCapacidade =
+            grupo.aulas.reduce(
+              (
+                total,
+                aula
+              ) =>
+                total +
+                Number(
+                  aula.capacidade ||
+                    0
+                ),
+              0
+            );
+
+          const totalReservado =
+            grupo.aulas.reduce(
+              (
+                total,
+                aula
+              ) =>
+                total +
+                contarReservas(
+                  aula.id
+                ),
+              0
+            );
+
+          const totalNaLista =
+            grupo.aulas.reduce(
+              (
+                total,
+                aula
+              ) =>
+                total +
+                contarListaEspera(
+                  aula.id
+                ),
+              0
+            );
+
+          const percentual =
+            totalCapacidade >
             0
-          );
-
-        const totalReservado =
-          grupo.aulas.reduce(
-            (
-              total,
-              aula
-            ) =>
-              total +
-              contarReservas(
-                aula.id
-              ),
-            0
-          );
-
-        const totalNaLista =
-          grupo.aulas.reduce(
-            (
-              total,
-              aula
-            ) =>
-              total +
-              contarListaEspera(
-                aula.id
-              ),
-            0
-          );
-
-        const percentual =
-          totalCapacidade > 0
-            ? Math.min(
-                100,
-                Math.round(
-                  (
-                    totalReservado /
-                    totalCapacidade
-                  ) * 100
+              ? Math.min(
+                  100,
+                  Math.round(
+                    (
+                      totalReservado /
+                      totalCapacidade
+                    ) *
+                    100
+                  )
                 )
-              )
-            : 0;
+              : 0;
 
-        const quantidadeTurmas =
-          grupo.aulas.length;
+          const quantidadeTurmas =
+            grupo.aulas.length;
 
-        return `
-          <article
-            class="time-card"
-          >
+          return `
+            <article
+              class="time-card"
+            >
 
-            <div class="time-main">
+              <div
+                class="time-main"
+              >
 
-              <div class="time-icon">
-                ${horarioTexto(
-                  grupo.inicio
-                ).substring(0, 2)}
-              </div>
-
-              <div>
-
-                <strong>
+                <div
+                  class="time-icon"
+                >
                   ${horarioTexto(
                     grupo.inicio
+                  ).substring(
+                    0,
+                    2
                   )}
-                  —
-                  ${horarioTexto(
-                    grupo.fim
-                  )}
-                </strong>
+                </div>
 
-                <span>
-                  ${quantidadeTurmas}
+                <div>
 
-                  ${
-                    quantidadeTurmas === 1
-                      ? "turma disponível"
-                      : "turmas disponíveis"
-                  }
-                </span>
+                  <strong>
+                    ${horarioTexto(
+                      grupo.inicio
+                    )}
 
-              </div>
+                    —
 
-            </div>
+                    ${horarioTexto(
+                      grupo.fim
+                    )}
+                  </strong>
 
+                  <span>
+                    ${quantidadeTurmas}
 
-            <div class="capacity">
+                    ${
+                      quantidadeTurmas ===
+                      1
+                        ? "turma disponível"
+                        : "turmas disponíveis"
+                    }
+                  </span>
 
-              <div>
-
-                <strong>
-                  ${totalReservado}
-                </strong>
-
-                <span>
-                  /
-                  ${totalCapacidade}
-                  vagas
-                </span>
+                </div>
 
               </div>
 
 
-              ${
-                totalNaLista > 0
-                  ? `
-                    <small>
-                      ${totalNaLista}
+              <div
+                class="capacity"
+              >
 
-                      ${
-                        totalNaLista === 1
-                          ? "pessoa"
-                          : "pessoas"
-                      }
+                <div>
 
-                      na lista de espera
-                    </small>
-                  `
-                  : ""
-              }
+                  <strong>
+                    ${totalReservado}
+                  </strong>
 
+                  <span>
+                    /
+                    ${totalCapacidade}
+                    vagas
+                  </span>
 
-              <div class="progress">
-
-                <span
-                  style="
-                    width:${percentual}%
-                  "
-                ></span>
-
-              </div>
-
-            </div>
+                </div>
 
 
-            <div class="class-grid">
-
-              ${grupo.aulas
-                .map(aula => {
-
-                  const reservasAula =
-                    contarReservas(
-                      aula.id
-                    );
-
-                  const vagasRestantes =
-                    Number(
-                      aula.capacidade
-                    ) -
-                    reservasAula;
-
-                  const pessoasNaEspera =
-                    contarListaEspera(
-                      aula.id
-                    );
-
-                  const lotada =
-                    vagasRestantes <= 0;
-
-                  return `
-                    <button
-                      class="inline-class-option"
-                      data-aula-id="${aula.id}"
-                      ${
-                        lotada
-                          ? 'data-lista-espera="true"'
-                          : ""
-                      }
-                    >
-
-                      <span>
-                        <strong>
-                          ${aula.turma}
-                        </strong>
-                      </span>
-
-                      <span
-                        class="class-meta"
-                      >
+                ${
+                  totalNaLista >
+                  0
+                    ? `
+                      <small>
+                        ${totalNaLista}
 
                         ${
-                          pessoasNaEspera > 0
-                            ? `
-                              <span
-                                class="wait-badge"
-                                data-wait-aula-id="${aula.id}"
-                                role="button"
-                                tabindex="0"
-                              >
-                                ${pessoasNaEspera} na espera
-                              </span>
-                            `
-                            : ""
+                          totalNaLista ===
+                          1
+                            ? "pessoa"
+                            : "pessoas"
                         }
 
-                        <small>
-                          ${reservasAula}/${aula.capacidade}
-                        </small>
+                        na lista de espera
+                      </small>
+                    `
+                    : ""
+                }
 
-                        <b>
-                          ›
-                        </b>
 
-                      </span>
+                <div
+                  class="progress"
+                >
 
-                    </button>
-                  `;
-                })
-                .join("")}
+                  <span
+                    style="
+                      width:${percentual}%
+                    "
+                  ></span>
 
-            </div>
+                </div>
 
-          </article>
-        `;
-      })
+              </div>
+
+
+              <div
+                class="class-grid"
+              >
+
+                ${grupo.aulas
+                  .map(
+                    aula => {
+
+                      const reservasAula =
+                        contarReservas(
+                          aula.id
+                        );
+
+                      const pessoasNaEspera =
+                        contarListaEspera(
+                          aula.id
+                        );
+
+                      const lotada =
+                        reservasAula >=
+                        Number(
+                          aula.capacidade
+                        );
+
+                      return `
+                        <button
+                          type="button"
+                          class="inline-class-option"
+                          data-aula-id="${aula.id}"
+                          ${
+                            lotada
+                              ? 'data-lista-espera="true"'
+                              : ""
+                          }
+                        >
+
+                          <span>
+
+                            <strong>
+                              ${escaparHtml(
+                                aula.turma
+                              )}
+                            </strong>
+
+                          </span>
+
+
+                          <span
+                            class="class-meta"
+                          >
+
+                            ${
+                              pessoasNaEspera >
+                              0
+                                ? `
+                                  <span
+                                    class="wait-badge"
+                                    data-wait-aula-id="${aula.id}"
+                                    role="button"
+                                    tabindex="0"
+                                  >
+                                    ${pessoasNaEspera}
+                                    na espera
+                                  </span>
+                                `
+                                : ""
+                            }
+
+
+                            <small>
+                              ${reservasAula}/${Number(
+                                aula.capacidade
+                              )}
+                            </small>
+
+
+                            <b>
+                              ›
+                            </b>
+
+                          </span>
+
+                        </button>
+                      `;
+
+                    }
+                  )
+                  .join("")}
+
+              </div>
+
+            </article>
+          `;
+        }
+      )
       .join("");
 
   lista
     .querySelectorAll(
       ".inline-class-option"
     )
-    .forEach(botao => {
+    .forEach(
+      botao => {
 
-      botao.addEventListener(
-        "click",
-        () => {
+        botao.addEventListener(
+          "click",
+          () => {
 
-          abrirReservaDaAula(
-            botao.dataset.aulaId
-          );
+            abrirReservaDaAula(
+              botao.dataset.aulaId
+            );
 
-        }
-      );
+          }
+        );
 
-    });
-
+      }
+    );
 
   lista
     .querySelectorAll(
       ".wait-badge"
     )
-    .forEach(badge => {
+    .forEach(
+      badge => {
 
-      badge.addEventListener(
-        "click",
-        event => {
-
-          event.preventDefault();
-          event.stopPropagation();
-
-          mostrarListaEspera(
-            badge.dataset.waitAulaId
-          );
-
-        }
-      );
-
-
-      badge.addEventListener(
-        "keydown",
-        event => {
-
-          if (
-            event.key === "Enter" ||
-            event.key === " "
-          ) {
+        badge.addEventListener(
+          "click",
+          event => {
 
             event.preventDefault();
+
             event.stopPropagation();
 
             mostrarListaEspera(
@@ -1103,17 +1559,350 @@ function renderizarHorarios() {
             );
 
           }
+        );
 
-        }
-      );
+        badge.addEventListener(
+          "keydown",
+          event => {
 
-    });
+            if (
+              event.key ===
+                "Enter" ||
+              event.key ===
+                " "
+            ) {
 
+              event.preventDefault();
+
+              event.stopPropagation();
+
+              mostrarListaEspera(
+                badge.dataset.waitAulaId
+              );
+
+            }
+
+          }
+        );
+
+      }
+    );
 }
 
 
 // --------------------------------------------------
-// RESERVAR
+// LISTA DE ESPERA - NOMES
+// --------------------------------------------------
+
+async function mostrarListaEspera(
+  aulaId
+) {
+  const {
+    data,
+    error
+  } = await supabase.rpc(
+    "consultar_nomes_lista_espera_por_aula",
+    {
+      p_aula_id:
+        aulaId
+    }
+  );
+
+  if (
+    error
+  ) {
+    console.error(
+      "Erro ao consultar lista de espera:",
+      error
+    );
+
+    return;
+  }
+
+  const nomes =
+    (
+      data || []
+    )
+      .map(
+        item =>
+          item.nome
+      )
+      .filter(Boolean);
+
+  if (
+    !nomes.length
+  ) {
+    return;
+  }
+
+  const overlay =
+    document.createElement(
+      "div"
+    );
+
+  overlay.style.position =
+    "fixed";
+
+  overlay.style.inset =
+    "0";
+
+  overlay.style.background =
+    "rgba(22, 54, 92, .38)";
+
+  overlay.style.display =
+    "flex";
+
+  overlay.style.alignItems =
+    "center";
+
+  overlay.style.justifyContent =
+    "center";
+
+  overlay.style.padding =
+    "20px";
+
+  overlay.style.zIndex =
+    "9999";
+
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+  modal.style.position =
+    "relative";
+
+  modal.style.width =
+    "min(420px, 100%)";
+
+  modal.style.background =
+    "#fffdf9";
+
+  modal.style.border =
+    "1px solid #dfe5eb";
+
+  modal.style.borderRadius =
+    "16px";
+
+  modal.style.boxShadow =
+    "0 18px 50px rgba(22, 54, 92, .18)";
+
+  modal.style.padding =
+    "24px";
+
+
+  const fecharX =
+    document.createElement(
+      "button"
+    );
+
+  fecharX.type =
+    "button";
+
+  fecharX.textContent =
+    "×";
+
+  fecharX.style.position =
+    "absolute";
+
+  fecharX.style.top =
+    "10px";
+
+  fecharX.style.right =
+    "12px";
+
+  fecharX.style.border =
+    "0";
+
+  fecharX.style.background =
+    "transparent";
+
+  fecharX.style.color =
+    "#71809a";
+
+  fecharX.style.fontSize =
+    "28px";
+
+  fecharX.style.lineHeight =
+    "1";
+
+  fecharX.style.cursor =
+    "pointer";
+
+  fecharX.addEventListener(
+    "click",
+    () =>
+      overlay.remove()
+  );
+
+
+  const titulo =
+    document.createElement(
+      "h3"
+    );
+
+  titulo.textContent =
+    "Lista de espera";
+
+  titulo.style.margin =
+    "0 30px 16px 0";
+
+  titulo.style.color =
+    "#16365c";
+
+  titulo.style.font =
+    '800 20px/1.2 "DM Sans", Arial, sans-serif';
+
+
+  const lista =
+    document.createElement(
+      "div"
+    );
+
+  lista.style.display =
+    "flex";
+
+  lista.style.flexDirection =
+    "column";
+
+  lista.style.gap =
+    "8px";
+
+
+  nomes.forEach(
+    nome => {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.style.display =
+        "flex";
+
+      item.style.alignItems =
+        "center";
+
+      item.style.padding =
+        "11px 13px";
+
+      item.style.border =
+        "1px solid #dfe5eb";
+
+      item.style.borderRadius =
+        "10px";
+
+      item.style.background =
+        "#fff";
+
+      item.style.color =
+        "#16365c";
+
+      item.style.font =
+        '700 14px/1.2 "DM Sans", Arial, sans-serif';
+
+      item.textContent =
+        `• ${nome}`;
+
+      lista.appendChild(
+        item
+      );
+
+    }
+  );
+
+
+  const fechar =
+    document.createElement(
+      "button"
+    );
+
+  fechar.type =
+    "button";
+
+  fechar.textContent =
+    "Fechar";
+
+  fechar.style.width =
+    "100%";
+
+  fechar.style.marginTop =
+    "18px";
+
+  fechar.style.border =
+    "0";
+
+  fechar.style.borderRadius =
+    "10px";
+
+  fechar.style.padding =
+    "11px 14px";
+
+  fechar.style.background =
+    "#24466d";
+
+  fechar.style.color =
+    "#fff";
+
+  fechar.style.font =
+    '700 14px "DM Sans", Arial, sans-serif';
+
+  fechar.style.cursor =
+    "pointer";
+
+  fechar.addEventListener(
+    "click",
+    () =>
+      overlay.remove()
+  );
+
+
+  modal.appendChild(
+    fecharX
+  );
+
+  modal.appendChild(
+    titulo
+  );
+
+  modal.appendChild(
+    lista
+  );
+
+  modal.appendChild(
+    fechar
+  );
+
+  overlay.appendChild(
+    modal
+  );
+
+  document.body.appendChild(
+    overlay
+  );
+
+
+  overlay.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        overlay
+      ) {
+
+        overlay.remove();
+
+      }
+
+    }
+  );
+}
+
+
+// --------------------------------------------------
+// RESERVAR / LISTA DE ESPERA
 // --------------------------------------------------
 
 document
@@ -1125,26 +1914,33 @@ document
     async () => {
 
       const nome =
-        document
-          .getElementById(
-            "nameInput"
-          )
-          ?.value
-          .trim() ||
+        document.getElementById(
+          "nameInput"
+        )?.value.trim() ||
         "";
 
       const whatsapp =
-        document
-          .getElementById(
-            "phoneInput"
-          )
-          ?.value
-          .trim() ||
+        document.getElementById(
+          "phoneInput"
+        )?.value.trim() ||
         "";
 
-      if (!aulaSelecionada) {
+      if (
+        !aulaSelecionada
+      ) {
+
         message.textContent =
           "Escolha uma turma.";
+
+        return;
+      }
+
+      if (
+        !ladoSelecionado
+      ) {
+
+        message.textContent =
+          "Escolha Esquerda ou Direita.";
 
         return;
       }
@@ -1160,32 +1956,13 @@ document
         return;
       }
 
-      const reservasAtuais =
-        contarReservas(
-          aulaSelecionada.id
-        );
-
-      const capacidade =
-        Number(
-          aulaSelecionada.capacidade
-        );
-
-      if (
-        !modoListaEspera &&
-        reservasAtuais >=
-          capacidade
-      ) {
-
-        message.textContent =
-          "Essa turma acabou de ficar lotada.";
-
-        return;
-      }
-
       const botao =
         document.getElementById(
           "reserveBtn"
         );
+
+      const textoOriginal =
+        botao.textContent;
 
       botao.disabled =
         true;
@@ -1193,68 +1970,40 @@ document
       botao.textContent =
         "Confirmando...";
 
-      let data;
-      let error;
-
-      if (
+      const rpcNome =
         modoListaEspera
-      ) {
+          ? "entrar_lista_espera_com_lado"
+          : "reservar_aula_com_lado";
 
-        const resposta =
-          await supabase.rpc(
-            "entrar_lista_espera",
-            {
-              p_aula_id:
-                aulaSelecionada.id,
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        rpcNome,
+        {
+          p_aula_id:
+            aulaSelecionada.id,
 
-              p_nome:
-                nome,
+          p_nome:
+            nome,
 
-              p_whatsapp:
-                whatsapp
-            }
-          );
+          p_whatsapp:
+            whatsapp,
 
-        data =
-          resposta.data;
-
-        error =
-          resposta.error;
-
-      } else {
-
-        const resposta =
-          await supabase.rpc(
-            "reservar_aula",
-            {
-              p_aula_id:
-                aulaSelecionada.id,
-
-              p_nome:
-                nome,
-
-              p_whatsapp:
-                whatsapp
-            }
-          );
-
-        data =
-          resposta.data;
-
-        error =
-          resposta.error;
-
-      }
+          p_lado:
+            ladoSelecionado
+        }
+      );
 
       botao.disabled =
         false;
 
       botao.textContent =
-        modoListaEspera
-          ? "Entrar na lista de espera"
-          : "Confirmar reserva";
+        textoOriginal;
 
-      if (error) {
+      if (
+        error
+      ) {
 
         console.error(
           "Erro:",
@@ -1278,6 +2027,8 @@ document
           resultado?.mensagem ||
           "Não foi possível concluir.";
 
+        await atualizarOcupacaoReserva();
+
         return;
       }
 
@@ -1295,7 +2046,7 @@ document
           ) + 1;
 
         message.textContent =
-          "Você entrou na lista de espera.";
+          `Você entrou na lista de espera da ${ladoSelecionado}.`;
 
       } else {
 
@@ -1323,13 +2074,21 @@ document
           "phoneInput"
         );
 
-      if (nameInput) {
-        nameInput.value = "";
+      if (
+        nameInput
+      ) {
+        nameInput.value =
+          "";
       }
 
-      if (phoneInput) {
-        phoneInput.value = "";
+      if (
+        phoneInput
+      ) {
+        phoneInput.value =
+          "";
       }
+
+      await atualizarOcupacaoReserva();
 
       renderizarHorarios();
 
@@ -1349,17 +2108,23 @@ document
     "click",
     () => {
 
-      if (backdrop) {
+      if (
+        backdrop
+      ) {
+
         backdrop.classList.remove(
           "open"
         );
+
       }
 
     }
   );
 
 
-if (backdrop) {
+if (
+  backdrop
+) {
 
   backdrop.addEventListener(
     "click",
@@ -1390,10 +2155,14 @@ document
     "click",
     () => {
 
-      if (receiptModal) {
+      if (
+        receiptModal
+      ) {
+
         receiptModal.classList.add(
           "open"
         );
+
       }
 
     }
@@ -1408,10 +2177,14 @@ document
     "click",
     () => {
 
-      if (receiptModal) {
+      if (
+        receiptModal
+      ) {
+
         receiptModal.classList.remove(
           "open"
         );
+
       }
 
     }
@@ -1431,12 +2204,9 @@ document
     async () => {
 
       const whatsapp =
-        document
-          .getElementById(
-            "receiptInput"
-          )
-          ?.value
-          .trim() ||
+        document.getElementById(
+          "receiptInput"
+        )?.value.trim() ||
         "";
 
       const receiptMessage =
@@ -1444,11 +2214,15 @@ document
           "receiptMessage"
         );
 
-      if (!receiptMessage) {
+      if (
+        !receiptMessage
+      ) {
         return;
       }
 
-      if (!whatsapp) {
+      if (
+        !whatsapp
+      ) {
 
         receiptMessage.textContent =
           "Digite seu WhatsApp.";
@@ -1471,7 +2245,9 @@ document
           }
         );
 
-      if (error) {
+      if (
+        error
+      ) {
 
         console.error(
           "Erro ao consultar reserva:",
@@ -1496,17 +2272,29 @@ document
           <strong>
             Reserva encontrada!
           </strong>
+
           <br>
-          ${reserva.nome}
+
+          ${escaparHtml(
+            reserva.nome
+          )}
+
           <br>
-          ${reserva.turma}
+
+          ${escaparHtml(
+            reserva.turma
+          )}
+
           <br>
+
           ${formatarData(
             reserva.data
           ).toLocaleDateString(
             "pt-BR"
           )}
+
           <br>
+
           ${horarioTexto(
             reserva.horario_inicio
           )}
@@ -1514,14 +2302,23 @@ document
           ${horarioTexto(
             reserva.horario_fim
           )}
+
+          <br>
+
+          ${escaparHtml(
+            reserva.lado ||
+              "Lado não informado"
+          )}
         `;
 
         return;
       }
 
       const {
-        data: listaEsperaData,
-        error: listaEsperaError
+        data:
+          listaEsperaData,
+        error:
+          listaEsperaError
       } =
         await supabase.rpc(
           "consultar_lista_espera_por_whatsapp",
@@ -1564,23 +2361,42 @@ document
         <strong>
           Entrada na lista de espera encontrada!
         </strong>
+
         <br>
-        ${espera.nome}
+
+        ${escaparHtml(
+          espera.nome
+        )}
+
         <br>
-        ${espera.turma}
+
+        ${escaparHtml(
+          espera.turma
+        )}
+
         <br>
+
         ${formatarData(
           espera.data
         ).toLocaleDateString(
           "pt-BR"
         )}
+
         <br>
+
         ${horarioTexto(
           espera.horario_inicio
         )}
         —
         ${horarioTexto(
           espera.horario_fim
+        )}
+
+        <br>
+
+        ${escaparHtml(
+          espera.lado ||
+            "Lado não informado"
         )}
       `;
 
@@ -1601,14 +2417,20 @@ function mostrarErro(
       ".time-list"
     );
 
-  if (!lista) {
+  if (
+    !lista
+  ) {
     return;
   }
 
   lista.innerHTML = `
-    <div class="info-strip">
+    <div
+      class="info-strip"
+    >
 
-      <div class="info-icon">
+      <div
+        class="info-icon"
+      >
         !
       </div>
 
@@ -1619,7 +2441,9 @@ function mostrarErro(
         </strong>
 
         <span>
-          ${texto}
+          ${escaparHtml(
+            texto
+          )}
         </span>
 
       </div>
@@ -1632,5 +2456,7 @@ function mostrarErro(
 // --------------------------------------------------
 // INICIAR
 // --------------------------------------------------
+
+inserirEstilosReserva();
 
 carregarDados();
