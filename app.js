@@ -374,6 +374,7 @@ function contarListaEspera(aulaId) {
 
 
 async function mostrarListaEspera(aulaId) {
+
   const {
     data,
     error
@@ -385,6 +386,7 @@ async function mostrarListaEspera(aulaId) {
   );
 
   if (error) {
+
     console.error(
       "Erro ao consultar lista de espera:",
       error
@@ -403,6 +405,7 @@ async function mostrarListaEspera(aulaId) {
       .filter(Boolean);
 
   if (!nomes.length) {
+
     alert(
       "Nenhuma pessoa está na lista de espera."
     );
@@ -410,14 +413,243 @@ async function mostrarListaEspera(aulaId) {
     return;
   }
 
-  alert(
-    "Pessoas na lista de espera:\n\n" +
-    nomes
-      .map(
-        (nome, indice) =>
-          `${indice + 1}. ${nome}`
-      )
-      .join("\n")
+
+  const overlay =
+    document.createElement("div");
+
+  overlay.id =
+    "listaEsperaModal";
+
+  overlay.style.position =
+    "fixed";
+
+  overlay.style.inset =
+    "0";
+
+  overlay.style.background =
+    "rgba(22, 54, 92, 0.38)";
+
+  overlay.style.display =
+    "flex";
+
+  overlay.style.alignItems =
+    "center";
+
+  overlay.style.justifyContent =
+    "center";
+
+  overlay.style.padding =
+    "20px";
+
+  overlay.style.zIndex =
+    "9999";
+
+
+  const modal =
+    document.createElement("div");
+
+  modal.style.width =
+    "min(420px, 100%)";
+
+  modal.style.background =
+    "#fffdf9";
+
+  modal.style.border =
+    "1px solid #dfe5eb";
+
+  modal.style.borderRadius =
+    "16px";
+
+  modal.style.boxShadow =
+    "0 18px 50px rgba(22, 54, 92, 0.18)";
+
+  modal.style.padding =
+    "24px";
+
+
+  const titulo =
+    document.createElement("h3");
+
+  titulo.textContent =
+    "Lista de espera";
+
+  titulo.style.margin =
+    "0 0 6px";
+
+  titulo.style.color =
+    "#16365c";
+
+  titulo.style.fontFamily =
+    '"DM Sans", Arial, sans-serif';
+
+  titulo.style.fontSize =
+    "20px";
+
+
+  const subtitulo =
+    document.createElement("p");
+
+  subtitulo.textContent =
+    `${nomes.length} ${
+      nomes.length === 1
+        ? "pessoa está"
+        : "pessoas estão"
+    } na lista de espera.`;
+
+  subtitulo.style.margin =
+    "0 0 18px";
+
+  subtitulo.style.color =
+    "#71809a";
+
+  subtitulo.style.fontFamily =
+    '"DM Sans", Arial, sans-serif';
+
+  subtitulo.style.fontSize =
+    "13px";
+
+
+  const lista =
+    document.createElement("div");
+
+  lista.style.display =
+    "flex";
+
+  lista.style.flexDirection =
+    "column";
+
+  lista.style.gap =
+    "8px";
+
+
+  nomes.forEach(
+    (nome, indice) => {
+
+      const item =
+        document.createElement("div");
+
+      item.style.padding =
+        "11px 13px";
+
+      item.style.border =
+        "1px solid #dfe5eb";
+
+      item.style.borderRadius =
+        "10px";
+
+      item.style.background =
+        "#fff";
+
+      item.style.color =
+        "#16365c";
+
+      item.style.fontFamily =
+        '"DM Sans", Arial, sans-serif';
+
+      item.style.fontSize =
+        "14px";
+
+      item.style.fontWeight =
+        "700";
+
+      item.textContent =
+        `${indice + 1}. ${nome}`;
+
+      lista.appendChild(item);
+
+    }
+  );
+
+
+  const fechar =
+    document.createElement("button");
+
+  fechar.type =
+    "button";
+
+  fechar.textContent =
+    "Fechar";
+
+  fechar.style.width =
+    "100%";
+
+  fechar.style.marginTop =
+    "20px";
+
+  fechar.style.border =
+    "0";
+
+  fechar.style.borderRadius =
+    "10px";
+
+  fechar.style.padding =
+    "11px 14px";
+
+  fechar.style.background =
+    "#24466d";
+
+  fechar.style.color =
+    "#fff";
+
+  fechar.style.fontFamily =
+    '"DM Sans", Arial, sans-serif';
+
+  fechar.style.fontWeight =
+    "700";
+
+  fechar.style.cursor =
+    "pointer";
+
+
+  fechar.addEventListener(
+    "click",
+    () => {
+
+      overlay.remove();
+
+    }
+  );
+
+
+  overlay.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        overlay
+      ) {
+
+        overlay.remove();
+
+      }
+
+    }
+  );
+
+
+  modal.appendChild(
+    titulo
+  );
+
+  modal.appendChild(
+    subtitulo
+  );
+
+  modal.appendChild(
+    lista
+  );
+
+  modal.appendChild(
+    fechar
+  );
+
+  overlay.appendChild(
+    modal
+  );
+
+  document.body.appendChild(
+    overlay
   );
 }
 
