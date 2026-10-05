@@ -45,6 +45,12 @@ button {
   cursor: pointer;
 }
 
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(199, 154, 74, .25);
+  outline-offset: 2px;
+}
+
 /* ---------------------------------------------------------
    Estrutura geral
    --------------------------------------------------------- */
@@ -247,8 +253,10 @@ main {
 /*
   Na referência, cada horário funciona como:
   linha do horário
-  + linha com as turmas daquele horário.
+  +
+  linha com as turmas daquele horário.
 */
+
 .time-card {
   min-height: 0;
   margin: 0;
@@ -267,6 +275,7 @@ main {
 }
 
 /* Cabeçalho do horário */
+
 .time-main {
   min-height: 40px;
   padding: 0 2px;
@@ -312,6 +321,7 @@ main {
 }
 
 /* O resumo de vagas do horário fica no lado direito. */
+
 .capacity {
   display: flex;
   align-items: center;
@@ -344,6 +354,7 @@ main {
 }
 
 /* Na etapa seguinte o botão será substituído pelas turmas. */
+
 .details-btn {
   display: none;
 }
@@ -356,6 +367,7 @@ main {
   Reservamos a área para os cards que o app.js vai gerar
   diretamente abaixo de cada horário.
 */
+
 .class-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -363,10 +375,19 @@ main {
   padding-top: 9px;
 }
 
+/*
+  Reset específico para os botões das turmas.
+  Evita aparência nativa do navegador e qualquer
+  pseudo-elemento inesperado.
+*/
+
 .inline-class-option,
 .class-option {
+  appearance: none;
+  -webkit-appearance: none;
   min-height: 54px;
   width: 100%;
+  margin: 0;
   border: 1px solid var(--line);
   border-radius: 11px;
   background: var(--surface);
@@ -379,6 +400,15 @@ main {
   text-align: left;
   box-shadow: 0 1px 2px rgba(24, 47, 72, .025);
   transition: .18s ease;
+  text-decoration: none;
+}
+
+.inline-class-option::before,
+.inline-class-option::after,
+.class-option::before,
+.class-option::after {
+  content: none !important;
+  display: none !important;
 }
 
 .inline-class-option:hover,
@@ -388,9 +418,18 @@ main {
   transform: translateY(-1px);
 }
 
+.inline-class-option > span:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+}
+
 .inline-class-option strong,
 .class-option strong {
+  display: block;
+  margin: 0;
   font: 700 13px/1.2 "DM Sans", sans-serif;
+  color: var(--ink);
 }
 
 .inline-class-option small,
@@ -401,9 +440,15 @@ main {
 
 .inline-class-option .class-meta,
 .class-option .class-meta {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 7px;
+}
+
+.inline-class-option .class-meta small,
+.class-option .class-meta small {
+  margin: 0;
 }
 
 .class-option b,
@@ -411,13 +456,14 @@ main {
   color: #8b99aa;
   font-size: 15px;
   font-weight: 500;
+  line-height: 1;
 }
 
 .wait-badge {
   padding: 3px 7px;
   border-radius: 999px;
   background: var(--accent-soft);
-  color: #9b6f13;
+  color: #9b6f13 !important;
   font-size: 9px;
   font-weight: 800;
   white-space: nowrap;
