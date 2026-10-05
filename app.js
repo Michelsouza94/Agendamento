@@ -714,8 +714,7 @@ function renderizarHorarios() {
                       "
                       <button
   class="
-    class-option
-    inline-class-option
+    class="inline-class-option"
   "
   data-aula-id="${aula.id}"
   ${
