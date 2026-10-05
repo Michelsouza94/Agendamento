@@ -483,6 +483,8 @@
 
               <th>Turma</th>
 
+              <th>Lado</th>
+
               <th>Ações</th>
 
             </tr>
@@ -572,6 +574,25 @@
         </div>
 
 
+        <div class="campo">
+
+          <label for="editarReservaLado">
+            Lado:
+          </label>
+
+          <br>
+
+          <select
+            id="editarReservaLado"
+            required
+          >
+            <option value="Esquerda">Esquerda</option>
+            <option value="Direita">Direita</option>
+          </select>
+
+        </div>
+
+
         <div class="acoes-form">
 
           <button
@@ -628,6 +649,8 @@
               <th>Horário</th>
 
               <th>Turma</th>
+
+              <th>Lado</th>
 
               <th>Entrada</th>
 
@@ -715,6 +738,25 @@
             id="editarListaAula"
             required
           >
+          </select>
+
+        </div>
+
+
+        <div class="campo">
+
+          <label for="editarListaLado">
+            Lado:
+          </label>
+
+          <br>
+
+          <select
+            id="editarListaLado"
+            required
+          >
+            <option value="Esquerda">Esquerda</option>
+            <option value="Direita">Direita</option>
           </select>
 
         </div>
@@ -1279,7 +1321,7 @@
       } = await supabaseClient
         .from("reservas")
         .select(
-          "id, aula_id, nome, whatsapp, created_at"
+          "id, aula_id, nome, whatsapp, lado, created_at"
         )
         .order("created_at", {
           ascending: false
@@ -1439,6 +1481,10 @@
           </td>
 
           <td>
+            ${escaparHtml(reserva.lado || "-")}
+          </td>
+
+          <td>
 
             <button
               class="btn-editar"
@@ -1484,7 +1530,7 @@
       } = await supabaseClient
         .from("reservas")
         .select(
-          "id, aula_id, nome, whatsapp"
+          "id, aula_id, nome, whatsapp, lado"
         )
         .eq("id", id)
         .single();
@@ -1524,6 +1570,11 @@
         "editarReservaAula",
         reserva.aula_id
       );
+
+
+      document.getElementById(
+        "editarReservaLado"
+      ).value = reserva.lado || "Esquerda";
 
 
       document.getElementById(
@@ -1580,6 +1631,12 @@
             ).value;
 
 
+          const lado =
+            document.getElementById(
+              "editarReservaLado"
+            ).value;
+
+
           const mensagem =
             document.getElementById(
               "mensagemEdicaoReserva"
@@ -1590,7 +1647,8 @@
             !id ||
             !nome ||
             !whatsapp ||
-            !aulaId
+            !aulaId ||
+            !lado
           ) {
 
             mensagem.textContent =
@@ -1611,7 +1669,8 @@
             .update({
               nome: nome,
               whatsapp: whatsapp,
-              aula_id: aulaId
+              aula_id: aulaId,
+              lado: lado
             })
             .eq("id", id);
 
@@ -1736,7 +1795,7 @@
       } = await supabaseClient
         .from("lista_espera")
         .select(
-          "id, aula_id, nome, whatsapp, created_at"
+          "id, aula_id, nome, whatsapp, lado, created_at"
         )
         .order(
           "created_at",
@@ -1908,6 +1967,10 @@
           </td>
 
           <td>
+            ${escaparHtml(pessoa.lado || "-")}
+          </td>
+
+          <td>
             ${entrada}
           </td>
 
@@ -1964,7 +2027,7 @@
       } = await supabaseClient
         .from("lista_espera")
         .select(
-          "id, aula_id, nome, whatsapp"
+          "id, aula_id, nome, whatsapp, lado"
         )
         .eq("id", id)
         .single();
@@ -2005,6 +2068,11 @@
         "editarListaAula",
         pessoa.aula_id
       );
+
+
+      document.getElementById(
+        "editarListaLado"
+      ).value = pessoa.lado || "Esquerda";
 
 
       document.getElementById(
@@ -2061,6 +2129,12 @@
             ).value;
 
 
+          const lado =
+            document.getElementById(
+              "editarListaLado"
+            ).value;
+
+
           const mensagem =
             document.getElementById(
               "mensagemEdicaoLista"
@@ -2071,7 +2145,8 @@
             !id ||
             !nome ||
             !whatsapp ||
-            !aulaId
+            !aulaId ||
+            !lado
           ) {
 
             mensagem.textContent =
@@ -2092,7 +2167,8 @@
             .update({
               nome: nome,
               whatsapp: whatsapp,
-              aula_id: aulaId
+              aula_id: aulaId,
+              lado: lado
             })
             .eq("id", id);
 
@@ -2226,7 +2302,7 @@
       } = await supabaseClient
         .from("lista_espera")
         .select(
-          "id, aula_id, nome, whatsapp"
+          "id, aula_id, nome, whatsapp, lado"
         )
         .eq("id", id)
         .single();
@@ -2256,11 +2332,12 @@
         data: resultado,
         error: reservaError
       } = await supabaseClient.rpc(
-        "reservar_aula",
+        "reservar_aula_com_lado",
         {
           p_aula_id: pessoa.aula_id,
           p_nome: pessoa.nome,
-          p_whatsapp: pessoa.whatsapp
+          p_whatsapp: pessoa.whatsapp,
+          p_lado: pessoa.lado || "Esquerda"
         }
       );
 
