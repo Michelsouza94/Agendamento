@@ -372,6 +372,53 @@ function contarListaEspera(aulaId) {
   return listaEsperaPorAula[aulaId] || 0;
 }
 
+async function mostrarListaEspera(aulaId) {
+  const {
+    data,
+    error
+  } = await supabase.rpc(
+    "consultar_nomes_lista_espera_por_aula",
+    {
+      p_aula_id: aulaId
+    }
+  );
+
+  if (error) {
+    console.error(
+      "Erro ao consultar lista de espera:",
+      error
+    );
+
+    alert(
+      "Não foi possível consultar a lista de espera."
+    );
+
+    return;
+  }
+
+  const nomes =
+    (data || [])
+      .map(item => item.nome)
+      .filter(Boolean);
+
+  if (!nomes.length) {
+    alert(
+      "Nenhuma pessoa está na lista de espera."
+    );
+
+    return;
+  }
+
+  alert(
+    "Pessoas na lista de espera:\n\n" +
+    nomes
+      .map(
+        (nome, indice) =>
+          `${indice + 1}. ${nome}`
+      )
+      .join("\n")
+  );
+}
 
 // --------------------------------------------------
 // ABRIR RESERVA DA TURMA
@@ -728,17 +775,19 @@ function renderizarHorarios() {
                       >
 
                         ${
-                          pessoasNaEspera > 0
-                            ? `
-                              <small
-                                class="wait-badge"
-                              >
-                                ${pessoasNaEspera}
-                                na espera
-                              </small>
-                            `
-                            : ""
-                        }
+  pessoasNaEspera > 0
+    ? `
+      <span
+        class="wait-badge"
+        data-wait-aula-id="${aula.id}"
+        role="button"
+        tabindex="0"
+      >
+        ${pessoasNaEspera} na espera
+      </span>
+    `
+    : ""
+}
 
                         <small>
                           ${reservasAula}/${aula.capacidade}
@@ -780,7 +829,49 @@ function renderizarHorarios() {
       );
 
     });
-}
+
+  lista
+  .querySelectorAll(
+    ".wait-badge"
+  )
+  .forEach(badge => {
+
+    badge.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        mostrarListaEspera(
+          badge.dataset.waitAulaId
+        );
+
+      }
+    );
+
+    badge.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          mostrarListaEspera(
+            badge.dataset.waitAulaId
+          );
+
+        }
+
+      }
+    );
+
+  });
 
 
 // --------------------------------------------------
